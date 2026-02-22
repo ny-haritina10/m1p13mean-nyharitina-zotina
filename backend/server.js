@@ -5,16 +5,19 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
+    .then(() => {
+        console.log("MongoDB Connected");
+        const seedAdmin = require("./seeders/userSeeder");
+        seedAdmin();
+    })
     .catch(err => console.log(err));
 
-// Test Route
+app.use("/api/auth", require("./routes/auth.routes"));
+
 app.get("/", (req, res) => {
     res.json({ message: "API is working 🚀" });
 });
