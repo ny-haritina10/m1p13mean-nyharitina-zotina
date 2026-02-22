@@ -1,0 +1,1 @@
+In addition to @AGENTS.md, you can find the global context at @docs ... Reply with "I got it" if you understand it and ready to implement features.
