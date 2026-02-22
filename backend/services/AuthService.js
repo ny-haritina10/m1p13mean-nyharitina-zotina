@@ -10,7 +10,13 @@ class AuthService {
       throw error;
     }
 
-    if (user.status === 'suspended') {
+    if (user.role === 'boutique' && user.status !== 'approved') {
+      const error = new Error('Account awaiting approval');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    if (user.role !== 'boutique' && user.status === 'suspended') {
       const error = new Error('Account is suspended');
       error.statusCode = 403;
       throw error;

@@ -15,28 +15,39 @@ import { FooterComponent } from '../components/footer/footer.component';
     <div class="admin-container" [class.sidebar-collapsed]="sidebarCollapsed">
       <app-sidebar [collapsed]="sidebarCollapsed"></app-sidebar>
       
-      <div class="main-content">
-        <router-outlet></router-outlet>
+      <main class="main-content">
+        <div class="content-wrapper">
+          <router-outlet></router-outlet>
+        </div>
         <app-footer></app-footer>
-      </div>
+      </main>
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      min-height: 100vh;
+    }
+    
     .admin-container {
       display: flex;
-      min-height: calc(100vh - 64px);
-      transition: all 0.3s ease;
+      min-height: 100vh;
+      padding-top: 64px;
+      box-sizing: border-box;
     }
     
     .main-content {
       flex: 1;
       margin-left: 260px;
-      padding: 20px;
-      background-color: #f5f5f5;
-      transition: margin-left 0.3s ease;
       display: flex;
       flex-direction: column;
       min-height: calc(100vh - 64px);
+      transition: margin-left 0.3s ease;
+    }
+    
+    .content-wrapper {
+      flex: 1;
+      padding: 24px;
     }
     
     .sidebar-collapsed .main-content {

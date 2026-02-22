@@ -18,12 +18,31 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['admin', 'boutique', 'customer'],
-    default: 'customer'
+    default: 'customer',
+    index: true
   },
   status: {
     type: String,
-    enum: ['active', 'suspended'],
-    default: 'active'
+    enum: ['pending', 'approved', 'rejected', 'suspended', 'active'],
+    default: function() {
+      return this.role === 'boutique' ? 'pending' : 'active';
+    },
+    index: true
+  },
+  boutiqueName: {
+    type: String,
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  approvedAt: {
+    type: Date
+  },
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   createdAt: {
     type: Date,
