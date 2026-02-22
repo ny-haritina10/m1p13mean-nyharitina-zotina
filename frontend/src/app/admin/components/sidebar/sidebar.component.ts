@@ -172,9 +172,7 @@ export class SidebarComponent {
       label: 'Gestion Locataires',
       icon: 'store',
       children: [
-        { label: 'Liste vendeurs', route: '/admin/sellers' },
-        { label: 'Contrats', route: '/admin/contracts' },
-        { label: 'Espaces', route: '/admin/spaces' }
+        { label: 'Liste vendeurs', route: '/admin/sellers' }
       ]
     }
   ];
