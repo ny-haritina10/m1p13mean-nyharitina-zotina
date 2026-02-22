@@ -60,3 +60,34 @@ exports.reactivateSeller = async (req, res, next) => {
     res.status(statusCode).json({ error: error.message });
   }
 };
+
+exports.createSeller = async (req, res, next) => {
+  try {
+    const { username, password, boutiqueName, phone } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    if (username.length < 4 || password.length < 4) {
+      return res.status(400).json({ error: 'Username and password must be at least 4 characters' });
+    }
+
+    const result = await adminSellerService.createSeller({ username, password, boutiqueName, phone });
+    res.status(201).json(result);
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({ error: error.message });
+  }
+};
+
+exports.updateSeller = async (req, res, next) => {
+  try {
+    const { boutiqueName, phone, status } = req.body;
+    const result = await adminSellerService.updateSeller(req.params.id, { boutiqueName, phone, status });
+    res.json(result);
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({ error: error.message });
+  }
+};

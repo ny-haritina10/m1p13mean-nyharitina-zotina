@@ -159,6 +159,75 @@ class AdminSellerService {
       }
     };
   }
+
+  async createSeller(data) {
+    const { username, password, boutiqueName, phone } = data;
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      const error = new Error('Username already exists');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const seller = new User({
+      username,
+      password,
+      role: 'boutique',
+      status: 'pending',
+      boutiqueName,
+      phone
+    });
+
+    await seller.save();
+
+    return {
+      message: 'Seller created successfully',
+      seller: {
+        id: seller._id,
+        username: seller.username,
+        boutiqueName: seller.boutiqueName,
+        phone: seller.phone,
+        status: seller.status
+      }
+    };
+  }
+
+  async updateSeller(sellerId, data) {
+    const { boutiqueName, phone, status } = data;
+
+    const seller = await User.findOne({ _id: sellerId, role: 'boutique' });
+    
+    if (!seller) {
+      const error = new Error('Seller not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (boutiqueName !== undefined) seller.boutiqueName = boutiqueName;
+    if (phone !== undefined) seller.phone = phone;
+    if (status !== undefined) {
+      if (!['pending', 'approved', 'rejected', 'suspended'].includes(status)) {
+        const error = new Error('Invalid status');
+        error.statusCode = 400;
+        throw error;
+      }
+      seller.status = status;
+    }
+
+    await seller.save();
+
+    return {
+      message: 'Seller updated successfully',
+      seller: {
+        id: seller._id,
+        username: seller.username,
+        boutiqueName: seller.boutiqueName,
+        phone: seller.phone,
+        status: seller.status
+      }
+    };
+  }
 }
 
 module.exports = new AdminSellerService();

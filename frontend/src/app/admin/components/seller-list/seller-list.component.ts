@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminSellerService, Seller } from '../../services/admin-seller.service';
+import { AdminSellerService, Seller, CreateSellerDto, UpdateSellerDto } from '../../services/admin-seller.service';
 
 @Component({
   selector: 'app-seller-list',
@@ -11,7 +11,11 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
     <div class="seller-list">
       <div class="header">
         <h1>Gestion des Vendeurs</h1>
-        <div class="filters">
+        <div class="header-actions">
+          <button class="btn-add" (click)="openCreateModal()">
+            <span class="material-icons">add</span>
+            Ajouter un vendeur
+          </button>
           <select [(ngModel)]="statusFilter" (change)="loadSellers()" class="filter-select">
             <option value="">Tous les statuts</option>
             <option value="pending">En attente</option>
@@ -49,6 +53,13 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
               </td>
               <td>{{ seller.createdAt | date:'dd/MM/yyyy' }}</td>
               <td class="actions">
+                <button 
+                  class="btn-edit"
+                  (click)="openEditModal(seller)"
+                  title="Modifier"
+                >
+                  <span class="material-icons">edit</span>
+                </button>
                 <button 
                   *ngIf="seller.status === 'pending'" 
                   class="btn-approve"
@@ -90,6 +101,80 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
         </table>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isEditing ? 'Modifier le vendeur' : 'Ajouter un vendeur' }}</h2>
+          <button class="modal-close" (click)="closeModal()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="submitForm()">
+            <div class="form-group">
+              <label for="username">Nom d'utilisateur *</label>
+              <input 
+                type="text" 
+                id="username" 
+                [(ngModel)]="formData.username" 
+                name="username"
+                required
+                [disabled]="isEditing"
+                placeholder="Nom d'utilisateur"
+              />
+            </div>
+            <div class="form-group" *ngIf="!isEditing">
+              <label for="password">Mot de passe *</label>
+              <input 
+                type="password" 
+                id="password" 
+                [(ngModel)]="formData.password" 
+                name="password"
+                required
+                placeholder="Mot de passe"
+              />
+            </div>
+            <div class="form-group">
+              <label for="boutiqueName">Nom de la boutique</label>
+              <input 
+                type="text" 
+                id="boutiqueName" 
+                [(ngModel)]="formData.boutiqueName" 
+                name="boutiqueName"
+                placeholder="Nom de la boutique"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Téléphone</label>
+              <input 
+                type="text" 
+                id="phone" 
+                [(ngModel)]="formData.phone" 
+                name="phone"
+                placeholder="Téléphone"
+              />
+            </div>
+            <div class="form-group" *ngIf="isEditing">
+              <label for="status">Statut</label>
+              <select id="status" [(ngModel)]="formData.status" name="status">
+                <option value="pending">En attente</option>
+                <option value="approved">Approuvé</option>
+                <option value="rejected">Rejeté</option>
+                <option value="suspended">Suspendu</option>
+              </select>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeModal()">Annuler</button>
+              <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+                {{ isSubmitting ? 'Enregistrement...' : (isEditing ? 'Modifier' : 'Ajouter') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .seller-list {
@@ -108,10 +193,32 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
       margin: 0;
     }
     
-    .filters {
+    .header-actions {
       display: flex;
       gap: 10px;
       align-items: center;
+    }
+    
+    .btn-add {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .btn-add:hover {
+      background: #059669;
+    }
+    
+    .btn-add .material-icons {
+      font-size: 20px;
     }
     
     .filter-select {
@@ -224,6 +331,10 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
       font-size: 20px;
     }
     
+    .btn-edit .material-icons {
+      color: #3b82f6;
+    }
+    
     .btn-approve .material-icons {
       color: #10b981;
     }
@@ -245,11 +356,157 @@ import { AdminSellerService, Seller } from '../../services/admin-seller.service'
       color: #94a3b8;
       padding: 40px !important;
     }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      color: #1e293b;
+      font-size: 18px;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    
+    .modal-close:hover {
+      background: #f1f5f9;
+    }
+    
+    .modal-close .material-icons {
+      font-size: 20px;
+      color: #64748b;
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group input:disabled {
+      background: #f3f4f6;
+      cursor: not-allowed;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+    
+    .btn-cancel {
+      padding: 10px 20px;
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .btn-cancel:hover {
+      background: #f9fafb;
+    }
+    
+    .btn-submit {
+      padding: 10px 20px;
+      border: none;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .btn-submit:hover:not(:disabled) {
+      background: #2563eb;
+    }
+    
+    .btn-submit:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
   `]
 })
 export class SellerListComponent implements OnInit {
   sellers: Seller[] = [];
   statusFilter = '';
+  
+  showModal = false;
+  isEditing = false;
+  isSubmitting = false;
+  editingSeller: Seller | null = null;
+  
+  formData: CreateSellerDto & UpdateSellerDto = {
+    username: '',
+    password: '',
+    boutiqueName: '',
+    phone: '',
+    status: 'pending'
+  };
 
   constructor(private adminSellerService: AdminSellerService) {}
 
@@ -263,6 +520,74 @@ export class SellerListComponent implements OnInit {
         next: (data) => this.sellers = data,
         error: (err) => console.error('Error loading sellers:', err)
       });
+  }
+
+  openCreateModal(): void {
+    this.isEditing = false;
+    this.editingSeller = null;
+    this.formData = {
+      username: '',
+      password: '',
+      boutiqueName: '',
+      phone: '',
+      status: 'pending'
+    };
+    this.showModal = true;
+  }
+
+  openEditModal(seller: Seller): void {
+    this.isEditing = true;
+    this.editingSeller = seller;
+    this.formData = {
+      username: seller.username,
+      password: '',
+      boutiqueName: seller.boutiqueName || '',
+      phone: seller.phone || '',
+      status: seller.status
+    };
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.isEditing = false;
+    this.editingSeller = null;
+  }
+
+  submitForm(): void {
+    if (this.isEditing && this.editingSeller) {
+      const updateData: UpdateSellerDto = {
+        boutiqueName: this.formData.boutiqueName,
+        phone: this.formData.phone,
+        status: this.formData.status
+      };
+      
+      this.isSubmitting = true;
+      this.adminSellerService.updateSeller(this.editingSeller._id, updateData).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.closeModal();
+          this.loadSellers();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          alert(err.error?.error || 'Error updating seller');
+        }
+      });
+    } else {
+      this.isSubmitting = true;
+      this.adminSellerService.createSeller(this.formData).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.closeModal();
+          this.loadSellers();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          alert(err.error?.error || 'Error creating seller');
+        }
+      });
+    }
   }
 
   approveSeller(id: string): void {

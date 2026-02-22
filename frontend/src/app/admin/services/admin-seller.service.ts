@@ -13,6 +13,19 @@ export interface Seller {
   approvedAt?: string;
 }
 
+export interface CreateSellerDto {
+  username: string;
+  password: string;
+  boutiqueName?: string;
+  phone?: string;
+}
+
+export interface UpdateSellerDto {
+  boutiqueName?: string;
+  phone?: string;
+  status?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +44,14 @@ export class AdminSellerService {
 
   getSellerById(id: string): Observable<Seller> {
     return this.http.get<Seller>(`${this.apiUrl}/sellers/${id}`);
+  }
+
+  createSeller(data: CreateSellerDto): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sellers`, data);
+  }
+
+  updateSeller(id: string, data: UpdateSellerDto): Observable<any> {
+    return this.http.put(`${this.apiUrl}/sellers/${id}`, data);
   }
 
   approveSeller(id: string): Observable<any> {

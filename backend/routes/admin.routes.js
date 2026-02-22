@@ -46,4 +46,18 @@ router.patch(
   AdminSellerController.reactivateSeller
 );
 
+router.post(
+  '/sellers',
+  authMiddleware,
+  roleMiddleware('admin'),
+  AdminSellerController.createSeller
+);
+
+router.put(
+  '/sellers/:id',
+  authMiddleware,
+  roleMiddleware('admin'),
+  AdminSellerController.updateSeller
+);
+
 module.exports = router;
