@@ -18,6 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
+app.use("/api/seller", require("./routes/seller.routes"));
 
 app.get("/", (req, res) => {
     res.json({ message: "API is working 🚀" });

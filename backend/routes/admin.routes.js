@@ -3,6 +3,7 @@ const router = express.Router();
 const AdminSellerController = require('../controllers/AdminSellerController');
 const RentalSpaceController = require('../controllers/RentalSpaceController');
 const ContractController = require('../controllers/ContractController');
+const RentController = require('../controllers/RentController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -123,6 +124,55 @@ router.patch(
   authMiddleware,
   roleMiddleware('admin'),
   ContractController.terminateContract
+);
+
+router.post(
+  '/rents/generate',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.generateRent
+);
+
+router.get(
+  '/rents/stats',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getDashboardStats
+);
+
+router.get(
+  '/rents',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getAllRents
+);
+
+router.get(
+  '/rents/:id',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getRentById
+);
+
+router.patch(
+  '/rents/:id/pay',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.markAsPaid
+);
+
+router.post(
+  '/rents/check-late',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.checkLatePayments
+);
+
+router.get(
+  '/rents/stats',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getDashboardStats
 );
 
 module.exports = router;

@@ -262,6 +262,14 @@ export class SidebarComponent implements OnInit {
         { label: 'Liste contrats', route: '/admin/contracts' },
         { label: 'Créer contrat', route: '/admin/contracts/create' }
       ]
+    },
+    {
+      label: 'Loyers',
+      icon: 'payments',
+      children: [
+        { label: 'Liste loyers', route: '/admin/rents' },
+        { label: 'Générer loyer', route: '/admin/rents/generate' }
+      ]
     }
   ];
 

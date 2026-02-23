@@ -8,6 +8,8 @@ import { ContractListComponent } from './admin/pages/contracts/contract-list/con
 import { CreateContractComponent } from './admin/pages/contracts/create-contract/create-contract.component';
 import { SpaceListComponent } from './admin/pages/spaces/space-list/space-list.component';
 import { CreateSpaceComponent } from './admin/pages/spaces/create-space/create-space.component';
+import { RentListComponent } from './admin/pages/rents/rent-list/rent-list.component';
+import { GenerateRentComponent } from './admin/pages/rents/generate-rent/generate-rent.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
 
@@ -25,6 +27,8 @@ export const routes: Routes = [
       { path: 'contracts/create', component: CreateContractComponent },
       { path: 'spaces', component: SpaceListComponent },
       { path: 'spaces/create', component: CreateSpaceComponent },
+      { path: 'rents', component: RentListComponent },
+      { path: 'rents/generate', component: GenerateRentComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
