@@ -279,6 +279,11 @@ export class SidebarComponent implements OnInit {
         { label: 'Mensuel', route: '/admin/reports/monthly' },
         { label: 'Annuel', route: '/admin/reports/yearly' }
       ]
+    },
+    {
+      label: 'Plan du Centre',
+      icon: 'map',
+      route: '/admin/map'
     }
   ];
 

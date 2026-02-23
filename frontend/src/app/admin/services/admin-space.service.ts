@@ -7,6 +7,7 @@ export interface RentalSpace {
   name: string;
   type: 'box' | 'kiosque' | 'stand';
   location?: string;
+  floor?: number;
   surface?: number;
   monthlyPrice: number;
   status: 'available' | 'occupied' | 'maintenance';
@@ -17,6 +18,7 @@ export interface CreateSpaceDto {
   name: string;
   type: 'box' | 'kiosque' | 'stand';
   location?: string;
+  floor?: number;
   surface?: number;
   monthlyPrice: number;
 }
@@ -29,13 +31,16 @@ export class AdminSpaceService {
 
   constructor(private http: HttpClient) {}
 
-  getSpaces(status?: string, type?: string): Observable<RentalSpace[]> {
+  getSpaces(status?: string, type?: string, floor?: number): Observable<RentalSpace[]> {
     let params = new HttpParams();
     if (status) {
       params = params.set('status', status);
     }
     if (type) {
       params = params.set('type', type);
+    }
+    if (floor !== undefined) {
+      params = params.set('floor', floor.toString());
     }
     return this.http.get<RentalSpace[]>(`${this.apiUrl}/spaces`, { params });
   }

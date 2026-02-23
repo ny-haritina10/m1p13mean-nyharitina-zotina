@@ -6,6 +6,7 @@ const ContractController = require('../controllers/ContractController');
 const RentController = require('../controllers/RentController');
 const FinancialReportController = require('../controllers/FinancialReportController');
 const InvoiceController = require('../controllers/InvoiceController');
+const MallMapController = require('../controllers/MallMapController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -224,6 +225,34 @@ router.get(
   authMiddleware,
   roleMiddleware('admin'),
   InvoiceController.getInvoiceByPayment
+);
+
+router.get(
+  '/map',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getMapData
+);
+
+router.get(
+  '/map/floors',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getFloors
+);
+
+router.get(
+  '/map/space/:id',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getSpaceDetails
+);
+
+router.patch(
+  '/map/space/:id/position',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.updateMapPosition
 );
 
 module.exports = router;
