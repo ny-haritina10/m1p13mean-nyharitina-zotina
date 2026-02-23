@@ -10,6 +10,9 @@ import { SpaceListComponent } from './admin/pages/spaces/space-list/space-list.c
 import { CreateSpaceComponent } from './admin/pages/spaces/create-space/create-space.component';
 import { RentListComponent } from './admin/pages/rents/rent-list/rent-list.component';
 import { GenerateRentComponent } from './admin/pages/rents/generate-rent/generate-rent.component';
+import { FinancialDashboardComponent } from './admin/pages/reports/dashboard/financial-dashboard.component';
+import { MonthlyReportComponent } from './admin/pages/reports/monthly/monthly-report.component';
+import { YearlyReportComponent } from './admin/pages/reports/yearly/yearly-report.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
 
@@ -29,6 +32,9 @@ export const routes: Routes = [
       { path: 'spaces/create', component: CreateSpaceComponent },
       { path: 'rents', component: RentListComponent },
       { path: 'rents/generate', component: GenerateRentComponent },
+      { path: 'reports/dashboard', component: FinancialDashboardComponent },
+      { path: 'reports/monthly', component: MonthlyReportComponent },
+      { path: 'reports/yearly', component: YearlyReportComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

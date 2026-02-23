@@ -5,6 +5,7 @@ import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AdminRentService, RentPayment } from '../../../services/admin-rent.service';
 import { AdminContractService, Contract } from '../../../services/admin-contract.service';
+import { FinancialReportService, Invoice } from '../../../services/financial-report.service';
 
 @Component({
   selector: 'app-rent-list',
@@ -120,6 +121,14 @@ import { AdminContractService, Contract } from '../../../services/admin-contract
                         (click)="markAsPaid(rent._id)">
                   <span class="material-icons">payments</span>
                   Marquer payé
+                </button>
+                <button class="btn-invoice" (click)="generateInvoice(rent._id)">
+                  <span class="material-icons">receipt</span>
+                  Facture
+                </button>
+                <button *ngIf="hasInvoice(rent)" class="btn-download" (click)="downloadInvoice(rent)">
+                  <span class="material-icons">download</span>
+                  PDF
                 </button>
               </td>
             </tr>
@@ -272,6 +281,38 @@ import { AdminContractService, Contract } from '../../../services/admin-contract
     }
     .btn-pay:hover { background: #00a383; }
     .btn-pay .material-icons { font-size: 16px; }
+    .btn-invoice {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #4361ee;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .btn-invoice:hover { background: #3451db; }
+    .btn-invoice .material-icons { font-size: 16px; }
+    .btn-download {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #00b894;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .btn-download:hover { background: #00a383; }
+    .btn-download .material-icons { font-size: 16px; }
     .empty-state {
       text-align: center;
       padding: 64px;
@@ -306,6 +347,7 @@ export class RentListComponent implements OnInit {
   constructor(
     private rentService: AdminRentService,
     private contractService: AdminContractService,
+    private reportService: FinancialReportService,
     private router: Router
   ) {
     this.router.events.pipe(
@@ -370,5 +412,29 @@ export class RentListComponent implements OnInit {
     const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     return months[month - 1];
+  }
+
+  invoiceMap: { [key: string]: Invoice } = {};
+
+  generateInvoice(rentId: string) {
+    this.reportService.generateInvoice(rentId).subscribe({
+      next: (data) => {
+        this.invoiceMap[rentId] = data.invoice;
+        alert('Facture générée avec succès!');
+        this.loadRents();
+      },
+      error: (err) => alert(err.error?.error || 'Erreur lors de la génération de la facture')
+    });
+  }
+
+  hasInvoice(rent: RentPayment): boolean {
+    return !!this.invoiceMap[rent._id];
+  }
+
+  downloadInvoice(rent: RentPayment) {
+    const invoice = this.invoiceMap[rent._id];
+    if (invoice && (invoice._id || invoice.id)) {
+      this.reportService.downloadInvoice(invoice._id || invoice.id || '');
+    }
   }
 }

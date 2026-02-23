@@ -270,6 +270,15 @@ export class SidebarComponent implements OnInit {
         { label: 'Liste loyers', route: '/admin/rents' },
         { label: 'Générer loyer', route: '/admin/rents/generate' }
       ]
+    },
+    {
+      label: 'Rapports',
+      icon: 'assessment',
+      children: [
+        { label: 'Tableau de bord', route: '/admin/reports/dashboard' },
+        { label: 'Mensuel', route: '/admin/reports/monthly' },
+        { label: 'Annuel', route: '/admin/reports/yearly' }
+      ]
     }
   ];
 
