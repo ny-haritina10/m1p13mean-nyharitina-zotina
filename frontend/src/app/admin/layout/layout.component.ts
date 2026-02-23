@@ -27,31 +27,32 @@ import { FooterComponent } from '../components/footer/footer.component';
     :host {
       display: block;
       min-height: 100vh;
+      background: #faf9f6;
     }
     
     .admin-container {
       display: flex;
       min-height: 100vh;
-      padding-top: 64px;
+      padding-top: 72px;
       box-sizing: border-box;
     }
     
     .main-content {
       flex: 1;
-      margin-left: 260px;
+      margin-left: 280px;
       display: flex;
       flex-direction: column;
-      min-height: calc(100vh - 64px);
-      transition: margin-left 0.3s ease;
+      min-height: calc(100vh - 72px);
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .content-wrapper {
       flex: 1;
-      padding: 24px;
+      padding: 32px;
     }
     
     .sidebar-collapsed .main-content {
-      margin-left: 70px;
+      margin-left: 80px;
     }
     
     @media (max-width: 768px) {

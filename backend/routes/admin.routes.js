@@ -3,6 +3,9 @@ const router = express.Router();
 const AdminSellerController = require('../controllers/AdminSellerController');
 const RentalSpaceController = require('../controllers/RentalSpaceController');
 const ContractController = require('../controllers/ContractController');
+const RentController = require('../controllers/RentController');
+const FinancialReportController = require('../controllers/FinancialReportController');
+const InvoiceController = require('../controllers/InvoiceController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -123,6 +126,104 @@ router.patch(
   authMiddleware,
   roleMiddleware('admin'),
   ContractController.terminateContract
+);
+
+router.post(
+  '/rents/generate',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.generateRent
+);
+
+router.get(
+  '/rents/stats',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getDashboardStats
+);
+
+router.get(
+  '/rents',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getAllRents
+);
+
+router.get(
+  '/rents/:id',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getRentById
+);
+
+router.patch(
+  '/rents/:id/pay',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.markAsPaid
+);
+
+router.post(
+  '/rents/check-late',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.checkLatePayments
+);
+
+router.get(
+  '/rents/stats',
+  authMiddleware,
+  roleMiddleware('admin'),
+  RentController.getDashboardStats
+);
+
+router.get(
+  '/reports/monthly',
+  authMiddleware,
+  roleMiddleware('admin'),
+  FinancialReportController.getMonthlyReport
+);
+
+router.get(
+  '/reports/yearly',
+  authMiddleware,
+  roleMiddleware('admin'),
+  FinancialReportController.getYearlyReport
+);
+
+router.get(
+  '/reports/summary',
+  authMiddleware,
+  roleMiddleware('admin'),
+  FinancialReportController.getRevenueSummary
+);
+
+router.get(
+  '/reports/unpaid',
+  authMiddleware,
+  roleMiddleware('admin'),
+  FinancialReportController.getUnpaidSummary
+);
+
+router.post(
+  '/invoices/:rentPaymentId',
+  authMiddleware,
+  roleMiddleware('admin'),
+  InvoiceController.generateInvoice
+);
+
+router.get(
+  '/invoices/:invoiceId/download',
+  authMiddleware,
+  roleMiddleware('admin'),
+  InvoiceController.downloadInvoice
+);
+
+router.get(
+  '/invoices/payment/:rentPaymentId',
+  authMiddleware,
+  roleMiddleware('admin'),
+  InvoiceController.getInvoiceByPayment
 );
 
 module.exports = router;

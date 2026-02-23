@@ -9,107 +9,328 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="login-container">
-      <div class="login-card">
-        <h2>Connexion Administrateur</h2>
-        <form (ngSubmit)="onLogin()">
-          <div class="form-group">
-            <label for="username">Nom d'utilisateur</label>
-            <input
-              type="text"
-              id="username"
-              [(ngModel)]="username"
-              name="username"
-              required
-              placeholder="Entrez votre nom d'utilisateur"
-            />
+    <div class="login-wrapper">
+      <div class="login-left">
+        <div class="brand">
+          <div class="logo">
+            <span class="material-icons">storefront</span>
           </div>
-          <div class="form-group">
-            <label for="password">Mot de passe</label>
-            <input
-              type="password"
-              id="password"
-              [(ngModel)]="password"
-              name="password"
-              required
-              placeholder="Entrez votre mot de passe"
-            />
+          <h1>Centre Commercial</h1>
+          <p>Panneau d'administration</p>
+        </div>
+        <div class="decoration">
+          <div class="circle circle-1"></div>
+          <div class="circle circle-2"></div>
+          <div class="circle circle-3"></div>
+        </div>
+      </div>
+      
+      <div class="login-right">
+        <div class="login-card">
+          <div class="card-header">
+            <h2>Bienvenue</h2>
+            <p>Connectez-vous pour continuer</p>
           </div>
-          <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
-          </div>
-          <button type="submit" [disabled]="isLoading">
-            {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-          </button>
-        </form>
+          
+          <form (ngSubmit)="onLogin()" class="login-form">
+            <div class="input-group">
+              <span class="material-icons input-icon">person</span>
+              <input
+                type="text"
+                id="username"
+                [(ngModel)]="username"
+                name="username"
+                required
+                placeholder="Nom d'utilisateur"
+                autocomplete="username"
+              />
+            </div>
+            
+            <div class="input-group">
+              <span class="material-icons input-icon">lock</span>
+              <input
+                type="password"
+                id="password"
+                [(ngModel)]="password"
+                name="password"
+                required
+                placeholder="Mot de passe"
+                autocomplete="current-password"
+              />
+            </div>
+            
+            <div *ngIf="errorMessage" class="error-message">
+              <span class="material-icons">error</span>
+              {{ errorMessage }}
+            </div>
+            
+            <button type="submit" [disabled]="isLoading" class="login-btn">
+              <span *ngIf="!isLoading">Se connecter</span>
+              <span *ngIf="isLoading" class="loading-spinner"></span>
+            </button>
+          </form>
+        </div>
+        
+        <p class="footer-text">&copy; 2026 Centre Commercial</p>
       </div>
     </div>
   `,
   styles: [`
-    .login-container {
+    .login-wrapper {
       display: flex;
+      min-height: 100vh;
+      background: #faf9f6;
+    }
+    
+    .login-left {
+      flex: 1;
+      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      background-color: #f5f5f5;
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
     }
-    .login-card {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
+    
+    .brand {
+      position: relative;
+      z-index: 2;
       text-align: center;
-      margin-bottom: 1.5rem;
-      color: #333;
     }
-    .form-group {
-      margin-bottom: 1rem;
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: #e94560;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      transform: rotate(-5deg);
+      box-shadow: 0 8px 32px rgba(233, 69, 96, 0.4);
     }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #555;
+    
+    .logo .material-icons {
+      font-size: 40px;
+      color: white;
     }
-    input {
+    
+    .brand h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .brand p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .decoration {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+    }
+    
+    .circle-1 {
+      width: 400px;
+      height: 400px;
+      background: #e94560;
+      top: -100px;
+      right: -100px;
+    }
+    
+    .circle-2 {
+      width: 300px;
+      height: 300px;
+      background: #e94560;
+      bottom: -50px;
+      left: -50px;
+    }
+    
+    .circle-3 {
+      width: 150px;
+      height: 150px;
+      background: #e94560;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .login-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background: #faf9f6;
+    }
+    
+    .login-card {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      max-width: 380px;
+      background: white;
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 8px 40px rgba(26, 26, 46, 0.08);
     }
-    input:focus {
+    
+    .card-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .card-header h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+    
+    .card-header p {
+      color: #636e72;
+      font-size: 14px;
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #b2bec3;
+      font-size: 20px;
+      transition: var(--transition);
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      background: #faf9f6;
+      transition: var(--transition);
+    }
+    
+    .input-group input:focus {
       outline: none;
-      border-color: #007bff;
+      border-color: #e94560;
+      background: white;
     }
-    button {
+    
+    .input-group input:focus + .input-icon,
+    .input-group:focus-within .input-icon {
+      color: #e94560;
+    }
+    
+    .input-group input::placeholder {
+      color: #b2bec3;
+    }
+    
+    .error-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #fff5f5;
+      border: 1px solid #ffcaca;
+      border-radius: 10px;
+      color: #e74c3c;
+      font-size: 13px;
+    }
+    
+    .error-message .material-icons {
+      font-size: 18px;
+    }
+    
+    .login-btn {
       width: 100%;
-      padding: 0.75rem;
-      background-color: #007bff;
+      padding: 16px;
+      background: #e94560;
       color: white;
       border: none;
-      border-radius: 4px;
-      font-size: 1rem;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      margin-top: 1rem;
+      transition: var(--transition);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
     }
-    button:hover:not(:disabled) {
-      background-color: #0056b3;
+    
+    .login-btn:hover:not(:disabled) {
+      background: #d63651;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(233, 69, 96, 0.3);
     }
-    button:disabled {
-      background-color: #ccc;
+    
+    .login-btn:disabled {
+      opacity: 0.7;
       cursor: not-allowed;
     }
-    .error-message {
-      color: #dc3545;
-      background-color: #f8d7da;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-      text-align: center;
+    
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .footer-text {
+      margin-top: 32px;
+      color: #b2bec3;
+      font-size: 12px;
+    }
+    
+    @media (max-width: 900px) {
+      .login-left {
+        display: none;
+      }
+      
+      .login-right {
+        padding: 24px;
+      }
+      
+      .login-card {
+        padding: 32px 24px;
+      }
     }
   `]
 })
