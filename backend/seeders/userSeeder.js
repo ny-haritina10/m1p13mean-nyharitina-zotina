@@ -3,15 +3,17 @@ const User = require('../models/User');
 const seedAdmin = async () => {
   try {
     const adminExists = await User.findOne({ username: 'admin' });
-    
+
     if (adminExists) {
       console.log('Admin user already exists');
       return;
     }
 
+    const hashedPassword = await User.hashPassword('admin');
+    
     const admin = new User({
       username: 'admin',
-      password: 'admin',
+      password: hashedPassword,
       role: 'admin',
       status: 'active'
     });

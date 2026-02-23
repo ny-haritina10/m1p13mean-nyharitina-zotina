@@ -6,6 +6,9 @@ const ContractController = require('../controllers/ContractController');
 const RentController = require('../controllers/RentController');
 const FinancialReportController = require('../controllers/FinancialReportController');
 const InvoiceController = require('../controllers/InvoiceController');
+const MallMapController = require('../controllers/MallMapController');
+const SpaceAvailabilityController = require('../controllers/SpaceAvailabilityController');
+const SpaceAssignmentController = require('../controllers/SpaceAssignmentController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -77,6 +80,69 @@ router.get(
   authMiddleware,
   roleMiddleware('admin'),
   RentalSpaceController.getAvailableSpaces
+);
+
+router.get(
+  '/spaces/availability',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.getAvailability
+);
+
+router.get(
+  '/spaces/by-status',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.getSpacesByStatus
+);
+
+router.patch(
+  '/spaces/:id/maintenance',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.setMaintenance
+);
+
+router.patch(
+  '/spaces/:id/remove-maintenance',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.removeMaintenance
+);
+
+router.post(
+  '/spaces/sync',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.syncStatus
+);
+
+router.get(
+  '/spaces/assign/available',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.getAvailableSpaces
+);
+
+router.get(
+  '/spaces/assign/sellers',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.getApprovedSellers
+);
+
+router.post(
+  '/spaces/assign',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.assignSpace
+);
+
+router.patch(
+  '/spaces/reassign/:contractId',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.reassignSpace
 );
 
 router.get(
@@ -224,6 +290,34 @@ router.get(
   authMiddleware,
   roleMiddleware('admin'),
   InvoiceController.getInvoiceByPayment
+);
+
+router.get(
+  '/map',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getMapData
+);
+
+router.get(
+  '/map/floors',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getFloors
+);
+
+router.get(
+  '/map/space/:id',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.getSpaceDetails
+);
+
+router.patch(
+  '/map/space/:id/position',
+  authMiddleware,
+  roleMiddleware('admin'),
+  MallMapController.updateMapPosition
 );
 
 module.exports = router;

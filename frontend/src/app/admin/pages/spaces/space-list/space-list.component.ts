@@ -31,6 +31,12 @@ import { AdminSpaceService, RentalSpace } from '../../../services/admin-space.se
           <option value="kiosque">Kiosque</option>
           <option value="stand">Stand</option>
         </select>
+        <select [(ngModel)]="floorFilter" (change)="loadSpaces()" class="filter-select">
+          <option value="">Tous les étages</option>
+          <option value="0">Rez-de-chaussée</option>
+          <option value="1">Étage 1</option>
+          <option value="2">Étage 2</option>
+        </select>
       </div>
 
       <div class="table-container" *ngIf="spaces.length > 0; else noSpaces">
@@ -39,6 +45,7 @@ import { AdminSpaceService, RentalSpace } from '../../../services/admin-space.se
             <tr>
               <th>Nom</th>
               <th>Type</th>
+              <th>Étage</th>
               <th>Emplacement</th>
               <th>Surface</th>
               <th>Prix Mensuel</th>
@@ -49,6 +56,7 @@ import { AdminSpaceService, RentalSpace } from '../../../services/admin-space.se
             <tr *ngFor="let space of spaces">
               <td>{{ space.name }}</td>
               <td>{{ getTypeLabel(space.type) }}</td>
+              <td>{{ space.floor ? 'Étage ' + space.floor : '-' }}</td>
               <td>{{ space.location || '-' }}</td>
               <td>{{ space.surface ? space.surface + ' m²' : '-' }}</td>
               <td>{{ space.monthlyPrice | number }} Ar</td>
@@ -141,6 +149,7 @@ export class SpaceListComponent implements OnInit {
   spaces: RentalSpace[] = [];
   statusFilter = '';
   typeFilter = '';
+  floorFilter = '';
 
   constructor(private spaceService: AdminSpaceService) {}
 
@@ -151,7 +160,8 @@ export class SpaceListComponent implements OnInit {
   loadSpaces() {
     this.spaceService.getSpaces(
       this.statusFilter || undefined, 
-      this.typeFilter || undefined
+      this.typeFilter || undefined,
+      this.floorFilter ? parseInt(this.floorFilter) : undefined
     ).subscribe({
       next: (data) => this.spaces = data,
       error: (err) => console.error('Error loading spaces', err)

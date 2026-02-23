@@ -3,7 +3,7 @@ const Contract = require('../models/Contract');
 
 class RentalSpaceService {
   async createSpace(data) {
-    const { name, type, location, surface, monthlyPrice } = data;
+    const { name, type, location, floor, surface, monthlyPrice } = data;
 
     const existingSpace = await RentalSpace.findOne({ name });
     if (existingSpace) {
@@ -16,6 +16,7 @@ class RentalSpaceService {
       name,
       type,
       location,
+      floor: floor || 1,
       surface,
       monthlyPrice
     });
@@ -29,6 +30,7 @@ class RentalSpaceService {
         name: space.name,
         type: space.type,
         location: space.location,
+        floor: space.floor,
         surface: space.surface,
         monthlyPrice: space.monthlyPrice,
         status: space.status
@@ -45,6 +47,10 @@ class RentalSpaceService {
 
     if (filters.type) {
       query.type = filters.type;
+    }
+
+    if (filters.floor !== undefined) {
+      query.floor = filters.floor;
     }
 
     const spaces = await RentalSpace.find(query).sort({ createdAt: -1 });
@@ -74,11 +80,12 @@ class RentalSpaceService {
       throw error;
     }
 
-    const { name, type, location, surface, monthlyPrice, status } = data;
+    const { name, type, location, floor, surface, monthlyPrice, status } = data;
 
     if (name !== undefined) space.name = name;
     if (type !== undefined) space.type = type;
     if (location !== undefined) space.location = location;
+    if (floor !== undefined) space.floor = floor;
     if (surface !== undefined) space.surface = surface;
     if (monthlyPrice !== undefined) space.monthlyPrice = monthlyPrice;
     if (status !== undefined) {
@@ -99,6 +106,7 @@ class RentalSpaceService {
         name: space.name,
         type: space.type,
         location: space.location,
+        floor: space.floor,
         surface: space.surface,
         monthlyPrice: space.monthlyPrice,
         status: space.status

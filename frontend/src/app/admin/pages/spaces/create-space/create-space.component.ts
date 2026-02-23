@@ -36,9 +36,18 @@ import { AdminSpaceService, CreateSpaceDto } from '../../../services/admin-space
           </div>
 
           <div class="form-group">
-            <label for="location">Emplacement</label>
-            <input type="text" id="location" [(ngModel)]="space.location" name="location" placeholder="Ex: Étage 1, Zone A">
+            <label for="floor">Étage *</label>
+            <select id="floor" [(ngModel)]="space.floor" name="floor" required>
+              <option [value]="1">Étage 1</option>
+              <option [value]="2">Étage 2</option>
+              <option [value]="3">Étage 3</option>
+            </select>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Emplacement</label>
+          <input type="text" id="location" [(ngModel)]="space.location" name="location" placeholder="Ex: Zone A">
         </div>
 
         <div class="form-row">
@@ -118,6 +127,7 @@ export class CreateSpaceComponent implements OnInit {
     name: '',
     type: 'box',
     location: '',
+    floor: 1,
     surface: 0,
     monthlyPrice: 0
   };

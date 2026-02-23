@@ -241,6 +241,11 @@ export class SidebarComponent implements OnInit {
   menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/admin/dashboard' },
     {
+      label: 'Plan du Centre',
+      icon: 'map',
+      route: '/admin/map'
+    },
+    {
       label: 'Gestion Locataires',
       icon: 'store',
       children: [
@@ -252,7 +257,8 @@ export class SidebarComponent implements OnInit {
       icon: 'meeting_room',
       children: [
         { label: 'Liste espaces', route: '/admin/spaces' },
-        { label: 'Créer espace', route: '/admin/spaces/create' }
+        { label: 'Créer espace', route: '/admin/spaces/create' },
+        { label: 'Disponibilité', route: '/admin/availability' }
       ]
     },
     {
@@ -260,7 +266,8 @@ export class SidebarComponent implements OnInit {
       icon: 'description',
       children: [
         { label: 'Liste contrats', route: '/admin/contracts' },
-        { label: 'Créer contrat', route: '/admin/contracts/create' }
+        { label: 'Créer contrat', route: '/admin/contracts/create' },
+        { label: 'Attribuer espace', route: '/admin/spaces/assign' }
       ]
     },
     {

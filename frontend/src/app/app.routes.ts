@@ -13,6 +13,9 @@ import { GenerateRentComponent } from './admin/pages/rents/generate-rent/generat
 import { FinancialDashboardComponent } from './admin/pages/reports/dashboard/financial-dashboard.component';
 import { MonthlyReportComponent } from './admin/pages/reports/monthly/monthly-report.component';
 import { YearlyReportComponent } from './admin/pages/reports/yearly/yearly-report.component';
+import { MallMapComponent } from './admin/pages/mall-map/mall-map.component';
+import { SpaceAvailabilityComponent } from './admin/pages/availability/space-availability.component';
+import { AssignSpaceComponent } from './admin/pages/assign-space/assign-space.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
 
@@ -35,6 +38,9 @@ export const routes: Routes = [
       { path: 'reports/dashboard', component: FinancialDashboardComponent },
       { path: 'reports/monthly', component: MonthlyReportComponent },
       { path: 'reports/yearly', component: YearlyReportComponent },
+      { path: 'map', component: MallMapComponent },
+      { path: 'availability', component: SpaceAvailabilityComponent },
+      { path: 'spaces/assign', component: AssignSpaceComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

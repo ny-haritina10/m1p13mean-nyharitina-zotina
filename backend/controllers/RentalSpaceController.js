@@ -2,13 +2,13 @@ const rentalSpaceService = require('../services/RentalSpaceService');
 
 exports.createSpace = async (req, res, next) => {
   try {
-    const { name, type, location, surface, monthlyPrice } = req.body;
+    const { name, type, location, floor, surface, monthlyPrice } = req.body;
 
     if (!name || !type || !monthlyPrice) {
       return res.status(400).json({ error: 'Name, type, and monthlyPrice are required' });
     }
 
-    const result = await rentalSpaceService.createSpace({ name, type, location, surface, monthlyPrice });
+    const result = await rentalSpaceService.createSpace({ name, type, location, floor, surface, monthlyPrice });
     res.status(201).json(result);
   } catch (error) {
     const statusCode = error.statusCode || 500;
@@ -18,8 +18,8 @@ exports.createSpace = async (req, res, next) => {
 
 exports.getAllSpaces = async (req, res, next) => {
   try {
-    const { status, type } = req.query;
-    const spaces = await rentalSpaceService.getAllSpaces({ status, type });
+    const { status, type, floor } = req.query;
+    const spaces = await rentalSpaceService.getAllSpaces({ status, type, floor: floor ? parseInt(floor) : undefined });
     res.json(spaces);
   } catch (error) {
     const statusCode = error.statusCode || 500;
@@ -49,8 +49,8 @@ exports.getSpaceById = async (req, res, next) => {
 
 exports.updateSpace = async (req, res, next) => {
   try {
-    const { name, type, location, surface, monthlyPrice, status } = req.body;
-    const result = await rentalSpaceService.updateSpace(req.params.id, { name, type, location, surface, monthlyPrice, status });
+    const { name, type, location, floor, surface, monthlyPrice, status } = req.body;
+    const result = await rentalSpaceService.updateSpace(req.params.id, { name, type, location, floor, surface, monthlyPrice, status });
     res.json(result);
   } catch (error) {
     const statusCode = error.statusCode || 500;
