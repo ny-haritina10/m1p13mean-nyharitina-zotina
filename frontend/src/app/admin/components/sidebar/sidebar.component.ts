@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -19,18 +19,28 @@ interface MenuItem {
       <nav class="sidebar-nav">
         <ul class="menu">
           <ng-container *ngFor="let item of menuItems">
-            <li class="menu-item" [class.has-children]="item.children">
+
+            <!-- 1. Single Link Item (No Children) -->
+            <li class="menu-item" *ngIf="!item.children">
               <a
-                *ngIf="!item.children"
                 [routerLink]="item.route"
                 routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
                 class="menu-link"
+                [title]="collapsed ? item.label : ''"
               >
                 <span class="material-icons menu-icon">{{ item.icon }}</span>
                 <span class="menu-label" *ngIf="!collapsed">{{ item.label }}</span>
               </a>
+            </li>
 
-              <div *ngIf="item.children" class="menu-parent" (click)="toggleSubmenu(item)">
+            <!-- 2. Parent Item (Has Children) -->
+            <li class="menu-item" *ngIf="item.children" [class.has-children]="true">
+              <div
+                class="menu-parent"
+                (click)="toggleSubmenu(item)"
+                [title]="collapsed ? item.label : ''"
+              >
                 <span class="material-icons menu-icon">{{ item.icon }}</span>
                 <span class="menu-label" *ngIf="!collapsed">{{ item.label }}</span>
                 <span class="material-icons expand-icon" *ngIf="!collapsed">
@@ -38,39 +48,57 @@ interface MenuItem {
                 </span>
               </div>
 
-              <ul class="submenu" *ngIf="item.children && expandedMenus.has(item.label) && !collapsed">
-                <li *ngFor="let child of item.children">
-                  <a [routerLink]="child.route" routerLinkActive="active" class="submenu-link">
+              <!-- 3. Submenu List -->
+              <ul class="submenu" *ngIf="expandedMenus.has(item.label) && !collapsed">
+                <li *ngFor="let child of item.children" class="submenu-item">
+                  <a
+                    [routerLink]="child.route"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    class="submenu-link"
+                  >
+                    <span class="material-icons submenu-icon">{{ child.icon || 'chevron_right' }}</span>
                     {{ child.label }}
                   </a>
                 </li>
               </ul>
             </li>
+
           </ng-container>
         </ul>
       </nav>
+
+      <div class="sidebar-footer" *ngIf="!collapsed">
+        <div class="footer-badge">
+          <span class="material-icons">verified</span>
+          <span>v1.0.0</span>
+        </div>
+      </div>
     </aside>
   `,
   styles: [`
     .sidebar {
-      width: 260px;
-      background-color: #1e293b;
+      width: 280px;
+      background: #1a1a2e;
       color: white;
-      min-height: calc(100vh - 64px);
+      min-height: calc(100vh - 72px);
       position: fixed;
       left: 0;
-      top: 64px;
-      transition: width 0.3s ease;
+      top: 72px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow-y: auto;
       z-index: 100;
+      display: flex;
+      flex-direction: column;
     }
 
     .sidebar.collapsed {
-      width: 70px;
+      width: 80px;
     }
 
     .sidebar-nav {
-      padding: 20px 0;
+      padding: 16px 12px;
+      flex: 1;
     }
 
     .menu {
@@ -80,33 +108,38 @@ interface MenuItem {
     }
 
     .menu-item {
-      margin: 4px 10px;
+      margin-bottom: 4px;
     }
 
     .menu-link, .menu-parent {
       display: flex;
       align-items: center;
-      padding: 12px 16px;
-      color: #94a3b8;
+      padding: 14px 16px;
+      color: rgba(255, 255, 255, 0.65);
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+      user-select: none;
     }
 
     .menu-link:hover, .menu-parent:hover {
-      background-color: #334155;
+      background: rgba(255, 255, 255, 0.08);
       color: white;
     }
 
+    /* Active state for single links (Dashboard, etc) */
     .menu-link.active {
-      background-color: #3b82f6;
+      background: #e94560;
       color: white;
+      box-shadow: 0 4px 16px rgba(233, 69, 96, 0.3);
     }
 
     .menu-icon {
-      font-size: 24px;
-      margin-right: 12px;
+      font-size: 22px;
+      margin-right: 14px;
       flex-shrink: 0;
     }
 
@@ -115,54 +148,92 @@ interface MenuItem {
     }
 
     .menu-label {
-      font-size: 14px;
-      font-weight: 500;
       white-space: nowrap;
+      letter-spacing: -0.2px;
     }
 
     .expand-icon {
       margin-left: auto;
       font-size: 20px;
+      opacity: 0.5;
     }
 
+    /* Submenu Animations & Spacing */
     .submenu {
       list-style: none;
-      padding: 0 0 0 40px;
+      padding: 0 0 8px 0;
       margin: 0;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .submenu-item {
+      margin-bottom: 2px;
     }
 
     .submenu-link {
-      display: block;
-      padding: 10px 16px;
-      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px 12px 56px;
+      color: rgba(255, 255, 255, 0.5);
       text-decoration: none;
       font-size: 13px;
-      border-radius: 6px;
+      border-radius: 10px;
       transition: all 0.2s ease;
+      margin: 0 4px; /* Slight margin to look cleaner */
     }
 
     .submenu-link:hover {
-      background-color: #334155;
+      background: rgba(255, 255, 255, 0.06);
       color: white;
     }
 
+    /* Active state for Submenu links ONLY */
     .submenu-link.active {
-      background-color: #3b82f6;
-      color: white;
+      background: rgba(233, 69, 96, 0.15);
+      color: #e94560;
+    }
+
+    .submenu-icon {
+      font-size: 16px;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 12px;
+    }
+
+    .footer-badge .material-icons {
+      font-size: 16px;
     }
 
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
-
       .sidebar.mobile-open {
         transform: translateX(0);
       }
     }
   `]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   @Input() collapsed = false;
 
   expandedMenus = new Set<string>();
@@ -194,11 +265,15 @@ export class SidebarComponent {
     }
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.expandActiveSubmenu();
+
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      this.expandedMenus.clear();
+      this.expandActiveSubmenu();
     });
   }
 
@@ -209,5 +284,22 @@ export class SidebarComponent {
       this.expandedMenus.clear();
       this.expandedMenus.add(item.label);
     }
+  }
+
+  // Opens the parent menu based on URL, but does NOT apply styles (CSS handles styles)
+  private expandActiveSubmenu(): void {
+    const currentUrl = this.router.url;
+
+    this.menuItems.forEach(item => {
+      if (item.children) {
+        const hasActiveChild = item.children.some(child =>
+          child.route && currentUrl.includes(child.route)
+        );
+
+        if (hasActiveChild) {
+          this.expandedMenus.add(item.label);
+        }
+      }
+    });
   }
 }

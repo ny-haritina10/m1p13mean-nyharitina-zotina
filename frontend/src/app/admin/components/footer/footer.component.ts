@@ -8,17 +8,20 @@ import { CommonModule } from '@angular/common';
   template: `
     <footer class="footer">
       <div class="footer-content">
-        <span>&copy; 2026 RABEMANANTSOA Ny Haritina - ETU002716 & RASETRIHARINJANAHARY Zo Tina - ETU002597</span>
-        <span class="version">Version 1.0.0</span>
+        <span class="copyright">
+          <span class="material-icons">copyright</span>
+          2026 Centre Commercial - Administration
+        </span>
+        <span class="authors">RABEMANANTSOA Ny Haritina & RASETRIHARINJANAHARY Zo Tina</span>
       </div>
     </footer>
   `,
   styles: [`
     .footer {
-      background-color: white;
-      padding: 16px 20px;
+      background: white;
+      padding: 20px 32px;
       margin-top: auto;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #eee;
     }
 
     .footer-content {
@@ -26,11 +29,22 @@ import { CommonModule } from '@angular/common';
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
-      color: #64748b;
+      color: #636e72;
     }
 
-    .version {
+    .copyright {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copyright .material-icons {
+      font-size: 16px;
+    }
+
+    .authors {
       font-weight: 500;
+      color: #1a1a2e;
     }
   `]
 })
