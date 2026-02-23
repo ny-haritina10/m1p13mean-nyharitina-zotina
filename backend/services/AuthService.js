@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Contract = require('../models/Contract');
 
 class AuthService {
   async login(username, password) {
@@ -20,6 +21,19 @@ class AuthService {
       const error = new Error('Account is suspended');
       error.statusCode = 403;
       throw error;
+    }
+
+    if (user.role === 'boutique') {
+      const activeContract = await Contract.findOne({
+        seller: user._id,
+        status: 'active'
+      });
+
+      if (!activeContract) {
+        const error = new Error('Your rental contract is not active');
+        error.statusCode = 403;
+        throw error;
+      }
     }
 
     const isMatch = await user.comparePassword(password);

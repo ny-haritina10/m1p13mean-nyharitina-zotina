@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 interface MenuItem {
   label: string;
@@ -174,13 +175,38 @@ export class SidebarComponent {
       children: [
         { label: 'Liste vendeurs', route: '/admin/sellers' }
       ]
+    },
+    {
+      label: 'Espaces Commerciaux',
+      icon: 'meeting_room',
+      children: [
+        { label: 'Liste espaces', route: '/admin/spaces' },
+        { label: 'Créer espace', route: '/admin/spaces/create' }
+      ]
+    },
+    {
+      label: 'Contrats',
+      icon: 'description',
+      children: [
+        { label: 'Liste contrats', route: '/admin/contracts' },
+        { label: 'Créer contrat', route: '/admin/contracts/create' }
+      ]
     }
   ];
+
+  constructor(private router: Router) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.expandedMenus.clear();
+    });
+  }
 
   toggleSubmenu(item: MenuItem): void {
     if (this.expandedMenus.has(item.label)) {
       this.expandedMenus.delete(item.label);
     } else {
+      this.expandedMenus.clear();
       this.expandedMenus.add(item.label);
     }
   }

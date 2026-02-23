@@ -4,24 +4,27 @@ import { AdminHomeComponent } from './admin/components/admin-home/admin-home.com
 import { LayoutComponent } from './admin/layout/layout.component';
 import { DashboardComponent } from './admin/pages/dashboard/dashboard.component';
 import { SellerListComponent } from './admin/components/seller-list/seller-list.component';
+import { ContractListComponent } from './admin/pages/contracts/contract-list/contract-list.component';
+import { CreateContractComponent } from './admin/pages/contracts/create-contract/create-contract.component';
+import { SpaceListComponent } from './admin/pages/spaces/space-list/space-list.component';
+import { CreateSpaceComponent } from './admin/pages/spaces/create-space/create-space.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { 
-    path: 'admin', 
+  {
+    path: 'admin',
     component: LayoutComponent,
     canActivate: [AuthGuard, AdminGuard],
     children: [
       { path: 'home', component: AdminHomeComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'sellers', component: SellerListComponent },
-      { path: 'contracts', component: AdminHomeComponent },
-      { path: 'spaces', component: AdminHomeComponent },
-      { path: 'finances', component: AdminHomeComponent },
-      { path: 'statistics', component: AdminHomeComponent },
-      { path: 'settings', component: AdminHomeComponent },
+      { path: 'contracts', component: ContractListComponent },
+      { path: 'contracts/create', component: CreateContractComponent },
+      { path: 'spaces', component: SpaceListComponent },
+      { path: 'spaces/create', component: CreateSpaceComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
