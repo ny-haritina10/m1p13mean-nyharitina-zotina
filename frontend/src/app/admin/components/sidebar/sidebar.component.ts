@@ -266,7 +266,8 @@ export class SidebarComponent implements OnInit {
       icon: 'description',
       children: [
         { label: 'Liste contrats', route: '/admin/contracts' },
-        { label: 'Créer contrat', route: '/admin/contracts/create' }
+        { label: 'Créer contrat', route: '/admin/contracts/create' },
+        { label: 'Attribuer espace', route: '/admin/spaces/assign' }
       ]
     },
     {

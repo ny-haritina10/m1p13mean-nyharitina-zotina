@@ -15,6 +15,7 @@ import { MonthlyReportComponent } from './admin/pages/reports/monthly/monthly-re
 import { YearlyReportComponent } from './admin/pages/reports/yearly/yearly-report.component';
 import { MallMapComponent } from './admin/pages/mall-map/mall-map.component';
 import { SpaceAvailabilityComponent } from './admin/pages/availability/space-availability.component';
+import { AssignSpaceComponent } from './admin/pages/assign-space/assign-space.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
 
@@ -39,6 +40,7 @@ export const routes: Routes = [
       { path: 'reports/yearly', component: YearlyReportComponent },
       { path: 'map', component: MallMapComponent },
       { path: 'availability', component: SpaceAvailabilityComponent },
+      { path: 'spaces/assign', component: AssignSpaceComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

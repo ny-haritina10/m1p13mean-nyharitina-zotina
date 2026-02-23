@@ -8,6 +8,7 @@ const FinancialReportController = require('../controllers/FinancialReportControl
 const InvoiceController = require('../controllers/InvoiceController');
 const MallMapController = require('../controllers/MallMapController');
 const SpaceAvailabilityController = require('../controllers/SpaceAvailabilityController');
+const SpaceAssignmentController = require('../controllers/SpaceAssignmentController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -114,6 +115,34 @@ router.post(
   authMiddleware,
   roleMiddleware('admin'),
   SpaceAvailabilityController.syncStatus
+);
+
+router.get(
+  '/spaces/assign/available',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.getAvailableSpaces
+);
+
+router.get(
+  '/spaces/assign/sellers',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.getApprovedSellers
+);
+
+router.post(
+  '/spaces/assign',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.assignSpace
+);
+
+router.patch(
+  '/spaces/reassign/:contractId',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAssignmentController.reassignSpace
 );
 
 router.get(
