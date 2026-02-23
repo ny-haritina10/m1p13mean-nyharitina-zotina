@@ -351,8 +351,13 @@ export class LoginComponent {
 
     this.authService.login({ username: this.username, password: this.password })
       .subscribe({
-        next: () => {
-          this.router.navigate(['/admin']);
+        next: (response) => {
+          // Redirect based on role
+          if (response.user.role === 'boutique') {
+            this.router.navigate(['/seller']);
+          } else {
+            this.router.navigate(['/admin']);
+          }
         },
         error: (err) => {
           this.isLoading = false;

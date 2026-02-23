@@ -18,6 +18,7 @@ import { SpaceAvailabilityComponent } from './admin/pages/availability/space-ava
 import { AssignSpaceComponent } from './admin/pages/assign-space/assign-space.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
+import { sellerGuard } from './auth/guards/seller.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -44,5 +45,11 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  {
+    path: 'seller',
+    loadChildren: () => import('./seller/seller.routes').then(m => m.SELLER_ROUTES),
+    canActivate: [AuthGuard, sellerGuard]
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];

@@ -12,13 +12,16 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB Connected");
         const seedAdmin = require("./seeders/userSeeder");
+        const seedMenus = require("./seeders/menuSeeder");
         seedAdmin();
+        seedMenus();
     })
     .catch(err => console.log(err));
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/seller", require("./routes/seller.routes"));
+app.use("/api/menu", require("./routes/menu.routes"));
 
 app.get("/", (req, res) => {
     res.json({ message: "API is working 🚀" });
