@@ -7,6 +7,7 @@ const RentController = require('../controllers/RentController');
 const FinancialReportController = require('../controllers/FinancialReportController');
 const InvoiceController = require('../controllers/InvoiceController');
 const MallMapController = require('../controllers/MallMapController');
+const SpaceAvailabilityController = require('../controllers/SpaceAvailabilityController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -78,6 +79,41 @@ router.get(
   authMiddleware,
   roleMiddleware('admin'),
   RentalSpaceController.getAvailableSpaces
+);
+
+router.get(
+  '/spaces/availability',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.getAvailability
+);
+
+router.get(
+  '/spaces/by-status',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.getSpacesByStatus
+);
+
+router.patch(
+  '/spaces/:id/maintenance',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.setMaintenance
+);
+
+router.patch(
+  '/spaces/:id/remove-maintenance',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.removeMaintenance
+);
+
+router.post(
+  '/spaces/sync',
+  authMiddleware,
+  roleMiddleware('admin'),
+  SpaceAvailabilityController.syncStatus
 );
 
 router.get(

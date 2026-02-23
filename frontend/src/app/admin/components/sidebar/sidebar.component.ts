@@ -257,7 +257,8 @@ export class SidebarComponent implements OnInit {
       icon: 'meeting_room',
       children: [
         { label: 'Liste espaces', route: '/admin/spaces' },
-        { label: 'Créer espace', route: '/admin/spaces/create' }
+        { label: 'Créer espace', route: '/admin/spaces/create' },
+        { label: 'Disponibilité', route: '/admin/availability' }
       ]
     },
     {
