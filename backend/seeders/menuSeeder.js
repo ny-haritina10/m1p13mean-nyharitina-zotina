@@ -13,7 +13,11 @@ const seedMenus = async () => {
 
     const sellerMenus = [
       { label: "Ma Boutique", icon: "storefront", route: "/seller/boutique", roles: ["boutique"], order: 1 },
-      { label: "Mes Produits", icon: "inventory", route: "/seller/products", roles: ["boutique"], order: 2 }
+      { label: "Mes Produits", icon: "inventory", route: "/seller/products", roles: ["boutique"], order: 2 },
+      { label: "État des Stocks", icon: "assessment", route: "/seller/stock", roles: ["boutique"], order: 3 },
+      { label: "Mouvements", icon: "swap_horiz", route: "/seller/stock/movements", roles: ["boutique"], order: 4 },
+      { label: "Ventes", icon: "shopping_cart", route: "/seller/sales", roles: ["boutique"], order: 5 },
+      { label: "Rapport", icon: "receipt", route: "/seller/sales/report", roles: ["boutique"], order: 6 }
     ];
 
     const allMenus = [...adminMenus, ...sellerMenus];

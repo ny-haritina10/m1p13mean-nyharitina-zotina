@@ -170,3 +170,102 @@ exports.getDashboardStats = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.setPromotionalPrice = async (req, res, next) => {
+  try {
+    const { productId, promotionalPrice, startDate, endDate } = req.body;
+
+    console.log('📥 Set promotional price request:', {
+      userId: req.user.userId,
+      productId,
+      promotionalPrice,
+      startDate,
+      endDate
+    });
+
+    // Validation
+    if (!productId) {
+      return res.status(400).json({ error: 'Product ID is required' });
+    }
+
+    if (!promotionalPrice || promotionalPrice <= 0) {
+      return res.status(400).json({ error: 'Promotional price must be greater than 0' });
+    }
+
+    const Product = require('../models/Product');
+    const product = await Product.findOne({ _id: productId, seller: req.user.userId });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Validate promotional price is lower than regular price
+    if (promotionalPrice >= product.price) {
+      return res.status(400).json({ error: 'Promotional price must be lower than regular price' });
+    }
+
+    // Validate dates
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+      return res.status(400).json({ error: 'End date must be after start date' });
+    }
+
+    // Update product
+    product.isPromotional = true;
+    product.promotionalPrice = promotionalPrice;
+    product.promotionalStartDate = startDate ? new Date(startDate) : new Date();
+    product.promotionalEndDate = endDate ? new Date(endDate) : null;
+    
+    await product.save();
+
+    console.log('✅ Promotional price set for product:', productId);
+
+    res.json({
+      message: 'Promotional price set successfully',
+      product
+    });
+  } catch (error) {
+    console.error('❌ Set promotional price error:', error);
+    next(error);
+  }
+};
+
+exports.removePromotionalPrice = async (req, res, next) => {
+  try {
+    const Product = require('../models/Product');
+    
+    const product = await Product.findOne({ _id: req.params.id, seller: req.user.userId });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    product.isPromotional = false;
+    product.promotionalPrice = undefined;
+    product.promotionalStartDate = undefined;
+    product.promotionalEndDate = undefined;
+    
+    await product.save();
+
+    console.log('✅ Promotional price removed for product:', req.params.id);
+
+    res.json({ message: 'Promotional price removed successfully' });
+  } catch (error) {
+    console.error('❌ Remove promotional price error:', error);
+    next(error);
+  }
+};
+
+exports.getPromotionalProducts = async (req, res, next) => {
+  try {
+    const Product = require('../models/Product');
+    
+    const products = await Product.find({
+      seller: req.user.userId,
+      isPromotional: true
+    }).sort({ promotionalEndDate: 1 });
+
+    res.json({ products });
+  } catch (error) {
+    next(error);
+  }
+};

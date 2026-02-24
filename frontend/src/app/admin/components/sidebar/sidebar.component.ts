@@ -309,6 +309,15 @@ export class SidebarComponent implements OnInit {
         { label: 'État des stocks', route: '/seller/stock' },
         { label: 'Mouvements', route: '/seller/stock/movements' }
       ]
+    },
+    {
+      label: 'Ventes',
+      icon: 'shopping_cart',
+      children: [
+        { label: 'Liste ventes', route: '/seller/sales' },
+        { label: 'Rapport', route: '/seller/sales/report' },
+        { label: 'Promotions', route: '/seller/promotions' }
+      ]
     }
   ];
 

@@ -6,6 +6,7 @@ const BoutiqueController = require('../controllers/BoutiqueController');
 const ProductController = require('../controllers/ProductController');
 const StockMovementController = require('../controllers/StockMovementController');
 const CategoryController = require('../controllers/CategoryController');
+const SaleController = require('../controllers/SaleController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -49,6 +50,21 @@ router.get(
   authMiddleware,
   roleMiddleware('boutique'),
   ProductController.getDashboardStats
+);
+
+// Promotional products routes (MUST be before /products/:id)
+router.get(
+  '/products/promotional',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  ProductController.getPromotionalProducts
+);
+
+router.post(
+  '/products/promotion',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  ProductController.setPromotionalPrice
 );
 
 router.get(
@@ -147,6 +163,64 @@ router.delete(
   authMiddleware,
   roleMiddleware('boutique'),
   CategoryController.deleteCategory
+);
+
+// Sales routes
+router.post(
+  '/sales',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.createSale
+);
+
+router.get(
+  '/sales',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.getSales
+);
+
+router.get(
+  '/sales/:id',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.getSale
+);
+
+router.delete(
+  '/sales/:id',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.deleteSale
+);
+
+router.get(
+  '/sales/report/daily',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.getDailyReport
+);
+
+router.get(
+  '/sales/stats/revenue',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.getRevenueStats
+);
+
+router.get(
+  '/sales/stats/top-products',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SaleController.getTopProducts
+);
+
+// Promotional products routes (DELETE only, others are above)
+router.delete(
+  '/products/:id/promotion',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  ProductController.removePromotionalPrice
 );
 
 module.exports = router;

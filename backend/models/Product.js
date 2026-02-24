@@ -52,6 +52,20 @@ const productSchema = new mongoose.Schema({
     default: 'active',
     index: true
   },
+  isPromotional: {
+    type: Boolean,
+    default: false
+  },
+  promotionalPrice: {
+    type: Number,
+    min: 0
+  },
+  promotionalStartDate: {
+    type: Date
+  },
+  promotionalEndDate: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -63,13 +77,21 @@ const productSchema = new mongoose.Schema({
 });
 
 // Update status based on stock before saving
-productSchema.pre('save', function() {
+productSchema.pre('save', async function() {
   this.updatedAt = Date.now();
 
   if (this.stock === 0) {
     this.status = 'out_of_stock';
   } else if (this.stock > 0 && this.status === 'out_of_stock') {
     this.status = 'active';
+  }
+
+  // Handle promotional status
+  if (this.isPromotional && this.promotionalEndDate) {
+    if (new Date() > this.promotionalEndDate) {
+      this.isPromotional = false;
+      this.promotionalPrice = undefined;
+    }
   }
 });
 

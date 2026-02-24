@@ -12,6 +12,10 @@ export interface Product {
   lowStockThreshold: number;
   images: string[];
   status: 'active' | 'inactive' | 'out_of_stock';
+  isPromotional?: boolean;
+  promotionalPrice?: number;
+  promotionalStartDate?: string;
+  promotionalEndDate?: string;
   createdAt?: string;
 }
 
