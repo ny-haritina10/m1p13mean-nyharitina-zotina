@@ -293,7 +293,23 @@ export class SidebarComponent implements OnInit {
   ];
 
   private sellerMenuItems: MenuItemDisplay[] = [
-    { label: 'Ma Boutique', icon: 'storefront', route: '/seller/boutique' }
+    { label: 'Ma Boutique', icon: 'storefront', route: '/seller/boutique' },
+    {
+      label: 'Mes Produits',
+      icon: 'inventory',
+      children: [
+        { label: 'Catalogue', route: '/seller/products' },
+        { label: 'Catégories', route: '/seller/categories' }
+      ]
+    },
+    {
+      label: 'Stock',
+      icon: 'warehouse',
+      children: [
+        { label: 'État des stocks', route: '/seller/stock' },
+        { label: 'Mouvements', route: '/seller/stock/movements' }
+      ]
+    }
   ];
 
   constructor(

@@ -12,7 +12,8 @@ const seedMenus = async () => {
     ];
 
     const sellerMenus = [
-      { label: "Ma Boutique", icon: "storefront", route: "/seller/boutique", roles: ["boutique"], order: 1 }
+      { label: "Ma Boutique", icon: "storefront", route: "/seller/boutique", roles: ["boutique"], order: 1 },
+      { label: "Mes Produits", icon: "inventory", route: "/seller/products", roles: ["boutique"], order: 2 }
     ];
 
     const allMenus = [...adminMenus, ...sellerMenus];
