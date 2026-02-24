@@ -186,13 +186,14 @@ interface SaleProduct {
 
         <!-- Notes -->
         <div class="form-section">
+          <h2>📝 Description / Notes</h2>
           <div class="form-group">
-            <label>Notes</label>
+            <label>Description de la vente</label>
             <textarea
               [(ngModel)]="sale.notes"
               name="notes"
-              rows="3"
-              placeholder="Notes additionnelles..."
+              rows="4"
+              placeholder="Détails de la vente, informations complémentaires..."
             ></textarea>
           </div>
         </div>

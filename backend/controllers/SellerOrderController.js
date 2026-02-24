@@ -150,8 +150,8 @@ exports.updateStatus = async (req, res, next) => {
         })),
         totalAmount: order.totalAmount,
         paymentMethod: order.paymentMethod,
-        paymentStatus: order.paymentStatus === 'paid' ? 'paid' : 'pending',
-        amountPaid: order.paymentStatus === 'paid' ? order.totalAmount : 0,
+        paymentStatus: 'paid', // Force paid status for delivered orders
+        amountPaid: order.totalAmount, // Full amount paid
         customerInfo: {
           name: order.customer?.name,
           phone: order.customer?.phone

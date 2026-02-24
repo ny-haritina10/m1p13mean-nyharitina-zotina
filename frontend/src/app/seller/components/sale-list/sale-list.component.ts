@@ -83,6 +83,7 @@ import { SaleService, Sale } from '../../services/sale.service';
               <th>Montant Total</th>
               <th>Méthode</th>
               <th>Statut</th>
+              <th>Description</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -103,6 +104,10 @@ import { SaleService, Sale } from '../../services/sale.service';
                 <span class="status-badge" [class]="sale.paymentStatus">
                   {{ getPaymentStatusLabel(sale.paymentStatus) }}
                 </span>
+              </td>
+              <td class="description-cell">
+                <span *ngIf="sale.notes" class="description-text">{{ sale.notes | slice:0:50 }}{{ sale.notes && sale.notes.length > 50 ? '...' : '' }}</span>
+                <span *ngIf="!sale.notes" class="no-description">-</span>
               </td>
               <td>
                 <div class="actions">
@@ -351,6 +356,23 @@ import { SaleService, Sale } from '../../services/sale.service';
 
     .btn-icon.delete:hover {
       background: #e74c3c;
+    }
+
+    .description-cell {
+      max-width: 200px;
+    }
+
+    .description-text {
+      color: #636e72;
+      font-size: 13px;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .no-description {
+      color: #b2bec3;
+      font-style: italic;
     }
 
     .empty-state {
