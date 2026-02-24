@@ -11,6 +11,9 @@ import { SaleFormComponent } from './components/sale-form/sale-form.component';
 import { DailyReportComponent } from './components/daily-report/daily-report.component';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
 import { PromotionFormComponent } from './components/promotion-form/promotion-form.component';
+import { OrderListComponent } from './components/order-list/order-list.component';
+import { OrderDetailComponent } from './components/order-detail/order-detail.component';
+import { OrderFormComponent } from './components/order-form/order-form.component';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { sellerGuard } from '../auth/guards/seller.guard';
 
@@ -33,7 +36,10 @@ export const SELLER_ROUTES: Routes = [
       { path: 'sales/create', component: SaleFormComponent },
       { path: 'sales/report', component: DailyReportComponent },
       { path: 'promotions', component: PromotionListComponent },
-      { path: 'promotions/create', component: PromotionFormComponent }
+      { path: 'promotions/create', component: PromotionFormComponent },
+      { path: 'orders', component: OrderListComponent },
+      { path: 'orders/create', component: OrderFormComponent },
+      { path: 'orders/:id', component: OrderDetailComponent }
     ]
   }
 ];

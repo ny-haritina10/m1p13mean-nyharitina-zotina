@@ -7,6 +7,7 @@ const ProductController = require('../controllers/ProductController');
 const StockMovementController = require('../controllers/StockMovementController');
 const CategoryController = require('../controllers/CategoryController');
 const SaleController = require('../controllers/SaleController');
+const SellerOrderController = require('../controllers/SellerOrderController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
@@ -221,6 +222,63 @@ router.delete(
   authMiddleware,
   roleMiddleware('boutique'),
   ProductController.removePromotionalPrice
+);
+
+// Order routes
+router.post(
+  '/orders',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.createOrder
+);
+
+router.get(
+  '/orders',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.getOrders
+);
+
+router.get(
+  '/orders/:id',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.getOrder
+);
+
+router.patch(
+  '/orders/:id/validate',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.validateOrder
+);
+
+router.patch(
+  '/orders/:id/cancel',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.cancelOrder
+);
+
+router.patch(
+  '/orders/:id/status',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.updateStatus
+);
+
+router.patch(
+  '/orders/:id/notes',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.addInternalNote
+);
+
+router.get(
+  '/orders/stats/summary',
+  authMiddleware,
+  roleMiddleware('boutique'),
+  SellerOrderController.getOrderStats
 );
 
 module.exports = router;

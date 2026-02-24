@@ -318,6 +318,13 @@ export class SidebarComponent implements OnInit {
         { label: 'Rapport', route: '/seller/sales/report' },
         { label: 'Promotions', route: '/seller/promotions' }
       ]
+    },
+    {
+      label: 'Commandes',
+      icon: 'shopping_bag',
+      children: [
+        { label: 'Liste commandes', route: '/seller/orders' }
+      ]
     }
   ];
 
