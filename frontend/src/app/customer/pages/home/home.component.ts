@@ -1,32 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
-import { AuthService } from '../../../auth/services/auth.service';
+import { RouterLink } from '@angular/router';
+import { CustomerNavbarComponent } from '../../components/navbar/customer-navbar.component';
+import { CustomerFooterComponent } from '../../components/footer/customer-footer.component';
 
 @Component({
   selector: 'app-customer-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CustomerNavbarComponent, CustomerFooterComponent],
   template: `
     <div class="customer-home">
-      <header class="header">
-        <div class="logo">
-          <span class="material-icons">storefront</span>
-          <span>Centre Commercial</span>
-        </div>
-        <nav class="nav">
-          <a routerLink="/" class="nav-link">Accueil</a>
-          <a routerLink="/products" class="nav-link">Produits</a>
-          <ng-container *ngIf="!isLoggedIn">
-            <a routerLink="/customer-login" class="nav-link">Connexion</a>
-            <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
-          </ng-container>
-          <ng-container *ngIf="isLoggedIn">
-            <a routerLink="/customer" class="nav-link">Mon compte</a>
-            <a (click)="logout()" class="nav-link btn-logout">Se déconnecter</a>
-          </ng-container>
-        </nav>
-      </header>
+      <app-customer-navbar></app-customer-navbar>
 
       <section class="hero">
         <div class="hero-content">
@@ -56,78 +40,13 @@ import { AuthService } from '../../../auth/services/auth.service';
         </div>
       </section>
 
-      <footer class="footer">
-        <p>&copy; 2026 Centre Commercial. Tous droits réservés.</p>
-      </footer>
+      <app-customer-footer></app-customer-footer>
     </div>
   `,
   styles: [`
     .customer-home {
       min-height: 100vh;
       background: #faf9f6;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      background: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a2e;
-    }
-
-    .logo .material-icons {
-      color: #e94560;
-      font-size: 28px;
-    }
-
-    .nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: #636e72;
-      font-weight: 500;
-      transition: color 0.3s;
-      cursor: pointer;
-    }
-
-    .nav-link:hover {
-      color: #e94560;
-    }
-
-    .btn-register {
-      background: #e94560;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    .btn-register:hover {
-      background: #d63651;
-    }
-
-    .btn-logout {
-      background: #ef4444;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    .btn-logout:hover {
-      background: #dc2626;
     }
 
     .hero {
@@ -195,27 +114,6 @@ import { AuthService } from '../../../auth/services/auth.service';
     .feature-card p {
       color: #636e72;
     }
-
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: #636e72;
-      background: white;
-    }
   `]
 })
-export class CustomerHomeComponent {
-  get isLoggedIn(): boolean {
-    return this.authService.isAuthenticated();
-  }
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
-  }
-}
+export class CustomerHomeComponent {}

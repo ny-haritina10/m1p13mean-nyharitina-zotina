@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, Product, ProductSearchResponse, ProductFilters } from '../../services/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
 import { LoadingSkeletonComponent } from '../../components/loading-skeleton/loading-skeleton.component';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { ProductFiltersComponent, ProductFilters as FilterState } from '../../components/product-filters/product-filters.component';
+import { CustomerNavbarComponent } from '../../components/navbar/customer-navbar.component';
+import { CustomerFooterComponent } from '../../components/footer/customer-footer.component';
 
 @Component({
   selector: 'app-product-list',
@@ -18,27 +20,12 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
     LoadingSkeletonComponent,
     EmptyStateComponent,
     ProductFiltersComponent,
-    RouterLink
+    CustomerNavbarComponent,
+    CustomerFooterComponent
   ],
   template: `
     <div class="product-list-page">
-      <header class="header">
-        <div class="logo" routerLink="/">
-          <span class="material-icons">storefront</span>
-          <span>Centre Commercial</span>
-        </div>
-        <nav class="nav">
-          <a routerLink="/" class="nav-link">Accueil</a>
-          <a routerLink="/products" class="nav-link active">Produits</a>
-          <ng-container *ngIf="!isLoggedIn">
-            <a routerLink="/customer-login" class="nav-link">Connexion</a>
-            <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
-          </ng-container>
-          <ng-container *ngIf="isLoggedIn">
-            <a (click)="logout()" class="nav-link btn-logout">Se déconnecter</a>
-          </ng-container>
-        </nav>
-      </header>
+      <app-customer-navbar></app-customer-navbar>
 
       <section class="search-section">
         <h1>Nos Produits</h1>
@@ -48,7 +35,7 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
 
       <main class="products-main">
         <aside class="filters-container">
-          <app-product-filters
+          <app-product-filters 
             [filters]="currentFilters"
             (filterChange)="onFilterChange($event)">
           </app-product-filters>
@@ -66,42 +53,42 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
           </ng-container>
 
           <ng-container *ngIf="!loading && error">
-            <app-empty-state
-              icon="error_outline"
-              title="Erreur"
+            <app-empty-state 
+              icon="error_outline" 
+              title="Erreur" 
               [message]="error">
             </app-empty-state>
           </ng-container>
 
           <ng-container *ngIf="!loading && !error && products.length === 0">
-            <app-empty-state
-              icon="inventory_2"
-              title="Aucun produit trouvé"
+            <app-empty-state 
+              icon="inventory_2" 
+              title="Aucun produit trouvé" 
               [message]="getEmptyMessage()">
             </app-empty-state>
           </ng-container>
 
           <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
-            <app-product-card
-              *ngFor="let product of products"
+            <app-product-card 
+              *ngFor="let product of products" 
               [product]="product">
             </app-product-card>
           </div>
 
           <div class="pagination" *ngIf="!loading && !error && pagination.pages > 1">
-            <button
-              class="page-btn"
+            <button 
+              class="page-btn" 
               [disabled]="pagination.page <= 1"
               (click)="goToPage(pagination.page - 1)">
               <span class="material-icons">chevron_left</span>
             </button>
-
+            
             <span class="page-info">
               Page {{ pagination.page }} sur {{ pagination.pages }}
             </span>
-
-            <button
-              class="page-btn"
+            
+            <button 
+              class="page-btn" 
               [disabled]="pagination.page >= pagination.pages"
               (click)="goToPage(pagination.page + 1)">
               <span class="material-icons">chevron_right</span>
@@ -110,76 +97,13 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
         </div>
       </main>
 
-      <footer class="footer">
-        <p>&copy; 2026 Centre Commercial. Tous droits réservés.</p>
-      </footer>
+      <app-customer-footer></app-customer-footer>
     </div>
   `,
   styles: [`
     .product-list-page {
       min-height: 100vh;
       background: #faf9f6;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      background: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a2e;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .logo .material-icons {
-      color: #e94560;
-      font-size: 28px;
-    }
-
-    .nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: #636e72;
-      font-weight: 500;
-      transition: color 0.3s;
-      cursor: pointer;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: #e94560;
-    }
-
-    .btn-register {
-      background: #e94560;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    .btn-register:hover {
-      background: #d63651;
-    }
-
-    .btn-logout {
-      background: #ef4444;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
     }
 
     .search-section {
@@ -257,12 +181,6 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
     }
 
     @media (max-width: 640px) {
-      .header {
-        padding: 16px 20px;
-        flex-direction: column;
-        gap: 16px;
-      }
-
       .search-section {
         padding: 40px 20px 30px;
       }
@@ -312,14 +230,6 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
       color: #6b7280;
       font-size: 14px;
     }
-
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: #636e72;
-      background: white;
-      margin-top: 40px;
-    }
   `]
 })
 export class ProductListComponent implements OnInit {
@@ -341,7 +251,6 @@ export class ProductListComponent implements OnInit {
   };
   loading = true;
   error = '';
-  isLoggedIn = false;
 
   constructor(
     private productService: ProductService,
@@ -350,16 +259,11 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.checkAuth();
     this.route.queryParams.subscribe(params => {
       this.searchTerm = params['q'] || '';
       this.pagination.page = parseInt(params['page']) || 1;
       this.loadProducts();
     });
-  }
-
-  checkAuth(): boolean {
-    return !!localStorage.getItem('token');
   }
 
   loadProducts(): void {
@@ -395,7 +299,7 @@ export class ProductListComponent implements OnInit {
   onSearch(term: string): void {
     this.searchTerm = term;
     this.pagination.page = 1;
-    this.router.navigate(['/products'], {
+    this.router.navigate(['/products'], { 
       queryParams: { q: term || null, page: 1 },
       queryParamsHandling: 'merge'
     });
@@ -411,8 +315,8 @@ export class ProductListComponent implements OnInit {
   updateQueryParams(): void {
     const queryParams: any = { page: this.pagination.page };
     if (this.searchTerm) queryParams.q = this.searchTerm;
-
-    this.router.navigate(['/products'], {
+    
+    this.router.navigate(['/products'], { 
       queryParams,
       queryParamsHandling: 'merge'
     });
@@ -424,12 +328,6 @@ export class ProductListComponent implements OnInit {
       this.updateQueryParams();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.router.navigate(['/']);
   }
 
   getEmptyMessage(): string {

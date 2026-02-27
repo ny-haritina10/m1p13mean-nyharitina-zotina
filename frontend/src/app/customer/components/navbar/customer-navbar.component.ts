@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { CartService, Cart } from '../../../cart/services/cart.service';
 
 @Component({
   selector: 'app-customer-navbar',
@@ -16,6 +17,12 @@ import { AuthService } from '../../../auth/services/auth.service';
       <nav class="nav">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Accueil</a>
         <a routerLink="/products" routerLinkActive="active" class="nav-link">Produits</a>
+        
+        <a routerLink="/cart" class="nav-link cart-link">
+          <span class="material-icons">shopping_cart</span>
+          <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </a>
+        
         <ng-container *ngIf="!isLoggedIn">
           <a routerLink="/customer-login" class="nav-link">Connexion</a>
           <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
@@ -92,6 +99,34 @@ import { AuthService } from '../../../auth/services/auth.service';
       background: #dc2626;
     }
 
+    .cart-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 8px;
+    }
+
+    .cart-link .material-icons {
+      font-size: 24px;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
     @media (max-width: 640px) {
       .header {
         padding: 16px 20px;
@@ -101,9 +136,24 @@ import { AuthService } from '../../../auth/services/auth.service';
     }
   `]
 })
-export class CustomerNavbarComponent {
+export class CustomerNavbarComponent implements OnInit {
   private authService: AuthService = inject(AuthService);
   private router: Router = inject(Router);
+  private cartService: CartService = inject(CartService);
+  
+  cartCount = 0;
+
+  ngOnInit(): void {
+    this.cartService.cart$.subscribe((cart: Cart | null) => {
+      this.cartCount = cart?.totalQuantity || 0;
+    });
+    
+    this.cartService.getCart().subscribe({
+      next: (response: { data: { totalQuantity: number } }) => {
+        this.cartCount = response.data.totalQuantity;
+      }
+    });
+  }
 
   get isLoggedIn(): boolean {
     return this.authService.isAuthenticated();

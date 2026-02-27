@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService, ProductDetailResponse } from '../../services/product.service';
+import { CartService } from '../../../cart/services/cart.service';
 import { ImageGalleryComponent } from '../../components/image-gallery/image-gallery.component';
 import { PriceDisplayComponent } from '../../components/price-display/price-display.component';
 import { StockBadgeComponent } from '../../components/stock-badge/stock-badge.component';
@@ -412,7 +413,8 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -453,6 +455,16 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart(): void {
-    console.log('Add to cart - TODO');
+    if (!this.product) return;
+
+    this.cartService.addToCart(this.product.id, 1).subscribe({
+      next: (response) => {
+        this.cartService.updateCartSubject(response.data);
+        alert('Produit ajouté au panier!');
+      },
+      error: (err) => {
+        alert(err.error?.error || 'Erreur lors de l\'ajout au panier');
+      }
+    });
   }
 }
