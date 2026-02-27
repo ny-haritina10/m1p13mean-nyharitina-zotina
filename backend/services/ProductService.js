@@ -306,6 +306,74 @@ class ProductService {
         .sort()
     };
   }
+
+  async getProductDetail(productId) {
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      const error = new Error('Invalid product ID');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const product = await Product.findById(productId).lean();
+
+    if (!product) {
+      const error = new Error('Product not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const seller = await User.findById(product.seller).select('boutiqueName status mallLocation').lean();
+
+    if (!seller) {
+      const error = new Error('Seller not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (seller.status !== 'approved') {
+      const error = new Error('Product not available');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    if (product.status !== 'active') {
+      const error = new Error('Product not available');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const now = new Date();
+    const isPromotionActive = 
+      product.isPromotional &&
+      product.promotionalStartDate &&
+      product.promotionalEndDate &&
+      now >= new Date(product.promotionalStartDate) &&
+      now <= new Date(product.promotionalEndDate);
+
+    return {
+      success: true,
+      data: {
+        id: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        promotionActive: isPromotionActive,
+        promotionalPrice: isPromotionActive ? product.promotionalPrice : null,
+        stock: product.stock,
+        status: product.status,
+        images: product.images || [],
+        category: product.category,
+        boutique: {
+          name: seller.boutiqueName,
+          location: {
+            zone: seller.mallLocation?.zone || null,
+            floor: seller.mallLocation?.floor || null,
+            unitNumber: seller.mallLocation?.unitNumber || null
+          }
+        }
+      }
+    };
+  }
 }
 
 module.exports = new ProductService();

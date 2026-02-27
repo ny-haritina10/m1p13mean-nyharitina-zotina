@@ -8,7 +8,7 @@ import { Product } from '../../services/product.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <div class="product-card" [class.has-promotion]="product.promotionActive">
+    <div class="product-card" [class.has-promotion]="product.promotionActive" [routerLink]="['/products', product.id]">
       <div class="card-image">
         <img 
           [src]="product.image || '/assets/images/placeholder.png'" 
