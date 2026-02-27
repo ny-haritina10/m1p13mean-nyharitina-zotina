@@ -99,5 +99,7 @@ productSchema.index({ seller: 1 });
 productSchema.index({ category: 1 });
 productSchema.index({ status: 1 });
 productSchema.index({ stock: 1 });
+productSchema.index({ createdAt: -1 });
+productSchema.index({ name: 'text', description: 'text' });
 
 module.exports = mongoose.model('Product', productSchema);

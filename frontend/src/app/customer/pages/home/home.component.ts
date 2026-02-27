@@ -15,6 +15,8 @@ import { AuthService } from '../../../auth/services/auth.service';
           <span>Centre Commercial</span>
         </div>
         <nav class="nav">
+          <a routerLink="/" class="nav-link">Accueil</a>
+          <a routerLink="/products" class="nav-link">Produits</a>
           <ng-container *ngIf="!isLoggedIn">
             <a routerLink="/customer-login" class="nav-link">Connexion</a>
             <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
