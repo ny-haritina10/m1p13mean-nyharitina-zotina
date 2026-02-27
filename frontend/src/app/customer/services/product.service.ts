@@ -31,6 +31,30 @@ export interface FilterOptions {
   boutiques: string[];
 }
 
+export interface ProductDetailResponse {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    promotionActive: boolean;
+    promotionalPrice: number | null;
+    stock: number;
+    status: string;
+    images: string[];
+    category: string;
+    boutique: {
+      name: string;
+      location: {
+        zone: string | null;
+        floor: string | null;
+        unitNumber: string | null;
+      };
+    };
+  };
+}
+
 export interface ProductFilters {
   search?: string;
   page?: number;
@@ -83,5 +107,9 @@ export class ProductService {
 
   getFilterOptions(): Observable<FilterOptions> {
     return this.http.get<FilterOptions>(this.apiUrl + '/filters');
+  }
+
+  getProductDetail(id: string): Observable<ProductDetailResponse> {
+    return this.http.get<ProductDetailResponse>(`${this.apiUrl}/${id}`);
   }
 }

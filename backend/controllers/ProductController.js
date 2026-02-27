@@ -39,6 +39,16 @@ exports.getFilterOptions = async (req, res, next) => {
   }
 };
 
+exports.getProductDetail = async (req, res, next) => {
+  try {
+    const result = await productService.getProductDetail(req.params.id);
+    res.json(result);
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({ error: error.message });
+  }
+};
+
 exports.getAllProducts = async (req, res, next) => {
   try {
     const { category, status, search, sortBy, order } = req.query;

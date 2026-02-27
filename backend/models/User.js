@@ -51,6 +51,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  mallLocation: {
+    zone: { type: String, trim: true },
+    floor: { type: String, trim: true },
+    unitNumber: { type: String, trim: true }
+  },
   approvedAt: {
     type: Date
   },

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { ProductService, Product, ProductSearchResponse, ProductFilters } from '../../services/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
@@ -12,12 +12,13 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
   selector: 'app-product-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    ProductCardComponent, 
+    CommonModule,
+    ProductCardComponent,
     SearchBarComponent,
     LoadingSkeletonComponent,
     EmptyStateComponent,
-    ProductFiltersComponent
+    ProductFiltersComponent,
+    RouterLink
   ],
   template: `
     <div class="product-list-page">
@@ -47,7 +48,7 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
 
       <main class="products-main">
         <aside class="filters-container">
-          <app-product-filters 
+          <app-product-filters
             [filters]="currentFilters"
             (filterChange)="onFilterChange($event)">
           </app-product-filters>
@@ -65,42 +66,42 @@ import { ProductFiltersComponent, ProductFilters as FilterState } from '../../co
           </ng-container>
 
           <ng-container *ngIf="!loading && error">
-            <app-empty-state 
-              icon="error_outline" 
-              title="Erreur" 
+            <app-empty-state
+              icon="error_outline"
+              title="Erreur"
               [message]="error">
             </app-empty-state>
           </ng-container>
 
           <ng-container *ngIf="!loading && !error && products.length === 0">
-            <app-empty-state 
-              icon="inventory_2" 
-              title="Aucun produit trouvé" 
+            <app-empty-state
+              icon="inventory_2"
+              title="Aucun produit trouvé"
               [message]="getEmptyMessage()">
             </app-empty-state>
           </ng-container>
 
           <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
-            <app-product-card 
-              *ngFor="let product of products" 
+            <app-product-card
+              *ngFor="let product of products"
               [product]="product">
             </app-product-card>
           </div>
 
           <div class="pagination" *ngIf="!loading && !error && pagination.pages > 1">
-            <button 
-              class="page-btn" 
+            <button
+              class="page-btn"
               [disabled]="pagination.page <= 1"
               (click)="goToPage(pagination.page - 1)">
               <span class="material-icons">chevron_left</span>
             </button>
-            
+
             <span class="page-info">
               Page {{ pagination.page }} sur {{ pagination.pages }}
             </span>
-            
-            <button 
-              class="page-btn" 
+
+            <button
+              class="page-btn"
               [disabled]="pagination.page >= pagination.pages"
               (click)="goToPage(pagination.page + 1)">
               <span class="material-icons">chevron_right</span>
@@ -394,7 +395,7 @@ export class ProductListComponent implements OnInit {
   onSearch(term: string): void {
     this.searchTerm = term;
     this.pagination.page = 1;
-    this.router.navigate(['/products'], { 
+    this.router.navigate(['/products'], {
       queryParams: { q: term || null, page: 1 },
       queryParamsHandling: 'merge'
     });
@@ -410,8 +411,8 @@ export class ProductListComponent implements OnInit {
   updateQueryParams(): void {
     const queryParams: any = { page: this.pagination.page };
     if (this.searchTerm) queryParams.q = this.searchTerm;
-    
-    this.router.navigate(['/products'], { 
+
+    this.router.navigate(['/products'], {
       queryParams,
       queryParamsHandling: 'merge'
     });
