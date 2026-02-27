@@ -4,16 +4,30 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: true,
     unique: true,
     index: true,
     trim: true,
     minlength: 4
   },
+  firstName: {
+    type: String,
+    trim: true
+  },
+  lastName: {
+    type: String,
+    trim: true
+  },
+  email: {
+    type: String,
+    unique: true,
+    sparse: true,
+    index: true,
+    trim: true,
+    lowercase: true
+  },
   password: {
     type: String,
-    required: true,
-    minlength: 4
+    minlength: 8
   },
   role: {
     type: String,
@@ -23,7 +37,7 @@ const userSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected', 'suspended', 'active'],
+    enum: ['pending', 'approved', 'rejected', 'suspended', 'active', 'blocked'],
     default: function() {
       return this.role === 'boutique' ? 'pending' : 'active';
     },
