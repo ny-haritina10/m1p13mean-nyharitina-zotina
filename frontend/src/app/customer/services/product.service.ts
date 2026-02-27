@@ -25,6 +25,24 @@ export interface ProductSearchResponse {
   };
 }
 
+export interface FilterOptions {
+  success: boolean;
+  categories: string[];
+  boutiques: string[];
+}
+
+export interface ProductFilters {
+  search?: string;
+  page?: number;
+  limit?: number;
+  category?: string;
+  boutique?: string;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  promotion?: boolean;
+  sort?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,15 +51,37 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  searchProducts(search: string = '', page: number = 1, limit: number = 12): Observable<ProductSearchResponse> {
+  searchProducts(filters: ProductFilters = {}): Observable<ProductSearchResponse> {
     let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('page', (filters.page || 1).toString())
+      .set('limit', (filters.limit || 12).toString());
 
-    if (search.trim()) {
-      params = params.set('search', search.trim());
+    if (filters.search && filters.search.trim()) {
+      params = params.set('search', filters.search.trim());
+    }
+    if (filters.category) {
+      params = params.set('category', filters.category);
+    }
+    if (filters.boutique) {
+      params = params.set('boutique', filters.boutique);
+    }
+    if (filters.minPrice) {
+      params = params.set('minPrice', filters.minPrice.toString());
+    }
+    if (filters.maxPrice) {
+      params = params.set('maxPrice', filters.maxPrice.toString());
+    }
+    if (filters.promotion) {
+      params = params.set('promotion', 'true');
+    }
+    if (filters.sort) {
+      params = params.set('sort', filters.sort);
     }
 
     return this.http.get<ProductSearchResponse>(this.apiUrl, { params });
+  }
+
+  getFilterOptions(): Observable<FilterOptions> {
+    return this.http.get<FilterOptions>(this.apiUrl + '/filters');
   }
 }

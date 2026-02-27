@@ -2,7 +2,7 @@ const productService = require('../services/ProductService');
 
 exports.searchProducts = async (req, res, next) => {
   try {
-    const { search, page, limit } = req.query;
+    const { search, page, limit, category, boutique, minPrice, maxPrice, promotion, sort } = req.query;
 
     if (!page || isNaN(page) || parseInt(page) < 1) {
       return res.status(400).json({ error: 'Invalid page number' });
@@ -12,7 +12,27 @@ exports.searchProducts = async (req, res, next) => {
       return res.status(400).json({ error: 'Limit must be between 1 and 50' });
     }
 
-    const result = await productService.searchProducts({ search, page, limit });
+    const result = await productService.searchProducts({ 
+      search, 
+      page, 
+      limit, 
+      category, 
+      boutique, 
+      minPrice, 
+      maxPrice, 
+      promotion, 
+      sort 
+    });
+    res.json(result);
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({ error: error.message });
+  }
+};
+
+exports.getFilterOptions = async (req, res, next) => {
+  try {
+    const result = await productService.getFilterOptions();
     res.json(result);
   } catch (error) {
     next(error);

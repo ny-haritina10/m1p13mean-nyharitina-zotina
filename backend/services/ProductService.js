@@ -145,13 +145,19 @@ class ProductService {
     };
   }
 
-  async searchProducts({ search, page = 1, limit = 12 }) {
+  async searchProducts({ search, page = 1, limit = 12, category, boutique, minPrice, maxPrice, promotion, sort }) {
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 12;
 
     if (page < 1) page = 1;
     if (limit < 1) limit = 12;
     if (limit > 50) limit = 50;
+
+    if (minPrice && maxPrice && parseFloat(minPrice) > parseFloat(maxPrice)) {
+      const error = new Error('minPrice cannot be greater than maxPrice');
+      error.statusCode = 400;
+      throw error;
+    }
 
     const now = new Date();
 
@@ -160,6 +166,7 @@ class ProductService {
       stock: { $gt: 0 }
     };
 
+    // Text search
     if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i');
       query.$or = [
@@ -169,31 +176,78 @@ class ProductService {
       ];
     }
 
+    // Category filter
+    if (category && category.trim()) {
+      query.category = new RegExp(category.trim(), 'i');
+    }
+
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Get approved sellers
     const approvedSellerIds = await User.find({
       role: 'boutique',
       status: 'approved'
-    }).select('_id');
+    }).select('_id boutiqueName');
 
     const approvedSellerIdList = approvedSellerIds.map(s => s._id);
-    query.seller = { $in: approvedSellerIdList };
+    
+    // Boutique filter
+    if (boutique && boutique.trim()) {
+      const boutiqueRegex = new RegExp(boutique.trim(), 'i');
+      const filteredSellers = approvedSellerIds.filter(s => 
+        s.boutiqueName && boutiqueRegex.test(s.boutiqueName)
+      );
+      query.seller = { $in: filteredSellers.map(s => s._id) };
+    } else {
+      query.seller = { $in: approvedSellerIdList };
+    }
+
+    // Promotion filter - need to get products and filter manually
+    let productsQuery = Product.find(query)
+      .select('name price promotionalPrice isPromotional promotionalStartDate promotionalEndDate images stock status category seller')
+      .populate({
+        path: 'seller',
+        select: 'boutiqueName status'
+      });
+
+    // Sort
+    if (sort) {
+      switch (sort) {
+        case 'price_asc':
+          productsQuery = productsQuery.sort({ price: 1 });
+          break;
+        case 'price_desc':
+          productsQuery = productsQuery.sort({ price: -1 });
+          break;
+        case 'name_asc':
+          productsQuery = productsQuery.sort({ name: 1 });
+          break;
+        case 'name_desc':
+          productsQuery = productsQuery.sort({ name: -1 });
+          break;
+        case 'newest':
+        default:
+          productsQuery = productsQuery.sort({ createdAt: -1 });
+      }
+    } else {
+      productsQuery = productsQuery.sort({ createdAt: -1 });
+    }
 
     const skip = (page - 1) * limit;
+    productsQuery = productsQuery.skip(skip).limit(limit);
 
     const [products, total] = await Promise.all([
-      Product.find(query)
-        .select('name price promotionalPrice isPromotional promotionalStartDate promotionalEndDate images stock status category seller')
-        .populate({
-          path: 'seller',
-          select: 'boutiqueName status'
-        })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      productsQuery.lean(),
       Product.countDocuments(query)
     ]);
 
-    const data = products.map(product => {
+    // Process products and filter promotions
+    let data = products.map(product => {
       const isPromotionActive = 
         product.isPromotional &&
         product.promotionalStartDate &&
@@ -214,15 +268,42 @@ class ProductService {
       };
     });
 
+    // Filter for active promotions only if requested
+    if (promotion === 'true' || promotion === true) {
+      data = data.filter(p => p.promotionActive);
+    }
+
     return {
       success: true,
       data,
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit)
+        total: data.length,
+        pages: Math.ceil(data.length / limit)
       }
+    };
+  }
+
+  async getFilterOptions() {
+    const approvedSellers = await User.find({
+      role: 'boutique',
+      status: 'approved'
+    }).select('boutiqueName');
+
+    const categories = await Product.distinct('category', {
+      seller: { $in: approvedSellers.map(s => s._id) },
+      status: 'active',
+      stock: { $gt: 0 }
+    });
+
+    return {
+      success: true,
+      categories: categories.sort(),
+      boutiques: approvedSellers
+        .filter(s => s.boutiqueName)
+        .map(s => s.boutiqueName)
+        .sort()
     };
   }
 }

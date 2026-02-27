@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductService, Product, ProductSearchResponse } from '../../services/product.service';
+import { ProductService, Product, ProductSearchResponse, ProductFilters } from '../../services/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
 import { LoadingSkeletonComponent } from '../../components/loading-skeleton/loading-skeleton.component';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
+import { ProductFiltersComponent, ProductFilters as FilterState } from '../../components/product-filters/product-filters.component';
 
 @Component({
   selector: 'app-product-list',
@@ -15,7 +16,8 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
     ProductCardComponent, 
     SearchBarComponent,
     LoadingSkeletonComponent,
-    EmptyStateComponent
+    EmptyStateComponent,
+    ProductFiltersComponent
   ],
   template: `
     <div class="product-list-page">
@@ -44,57 +46,66 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
       </section>
 
       <main class="products-main">
-        <div class="results-info" *ngIf="!loading && !error">
-          <span *ngIf="searchTerm">Résultats pour "{{ searchTerm }}"</span>
-          <span *ngIf="!searchTerm">Tous les produits</span>
-          <span class="count">({{ pagination.total }} produits)</span>
-        </div>
+        <aside class="filters-container">
+          <app-product-filters 
+            [filters]="currentFilters"
+            (filterChange)="onFilterChange($event)">
+          </app-product-filters>
+        </aside>
 
-        <ng-container *ngIf="loading">
-          <app-loading-skeleton [count]="12"></app-loading-skeleton>
-        </ng-container>
+        <div class="products-content">
+          <div class="results-info" *ngIf="!loading && !error">
+            <span *ngIf="searchTerm">Résultats pour "{{ searchTerm }}"</span>
+            <span *ngIf="!searchTerm">Tous les produits</span>
+            <span class="count">({{ pagination.total }} produits)</span>
+          </div>
 
-        <ng-container *ngIf="!loading && error">
-          <app-empty-state 
-            icon="error_outline" 
-            title="Erreur" 
-            [message]="error">
-          </app-empty-state>
-        </ng-container>
+          <ng-container *ngIf="loading">
+            <app-loading-skeleton [count]="12"></app-loading-skeleton>
+          </ng-container>
 
-        <ng-container *ngIf="!loading && !error && products.length === 0">
-          <app-empty-state 
-            icon="inventory_2" 
-            title="Aucun produit trouvé" 
-            [message]="getEmptyMessage()">
-          </app-empty-state>
-        </ng-container>
+          <ng-container *ngIf="!loading && error">
+            <app-empty-state 
+              icon="error_outline" 
+              title="Erreur" 
+              [message]="error">
+            </app-empty-state>
+          </ng-container>
 
-        <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
-          <app-product-card 
-            *ngFor="let product of products" 
-            [product]="product">
-          </app-product-card>
-        </div>
+          <ng-container *ngIf="!loading && !error && products.length === 0">
+            <app-empty-state 
+              icon="inventory_2" 
+              title="Aucun produit trouvé" 
+              [message]="getEmptyMessage()">
+            </app-empty-state>
+          </ng-container>
 
-        <div class="pagination" *ngIf="!loading && !error && pagination.pages > 1">
-          <button 
-            class="page-btn" 
-            [disabled]="pagination.page <= 1"
-            (click)="goToPage(pagination.page - 1)">
-            <span class="material-icons">chevron_left</span>
-          </button>
-          
-          <span class="page-info">
-            Page {{ pagination.page }} sur {{ pagination.pages }}
-          </span>
-          
-          <button 
-            class="page-btn" 
-            [disabled]="pagination.page >= pagination.pages"
-            (click)="goToPage(pagination.page + 1)">
-            <span class="material-icons">chevron_right</span>
-          </button>
+          <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
+            <app-product-card 
+              *ngFor="let product of products" 
+              [product]="product">
+            </app-product-card>
+          </div>
+
+          <div class="pagination" *ngIf="!loading && !error && pagination.pages > 1">
+            <button 
+              class="page-btn" 
+              [disabled]="pagination.page <= 1"
+              (click)="goToPage(pagination.page - 1)">
+              <span class="material-icons">chevron_left</span>
+            </button>
+            
+            <span class="page-info">
+              Page {{ pagination.page }} sur {{ pagination.pages }}
+            </span>
+            
+            <button 
+              class="page-btn" 
+              [disabled]="pagination.page >= pagination.pages"
+              (click)="goToPage(pagination.page + 1)">
+              <span class="material-icons">chevron_right</span>
+            </button>
+          </div>
         </div>
       </main>
 
@@ -189,9 +200,21 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
     }
 
     .products-main {
+      display: flex;
+      gap: 32px;
       max-width: 1400px;
       margin: 0 auto;
       padding: 32px 40px;
+    }
+
+    .filters-container {
+      width: 280px;
+      flex-shrink: 0;
+    }
+
+    .products-content {
+      flex: 1;
+      min-width: 0;
     }
 
     .results-info {
@@ -207,17 +230,26 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
     }
 
     @media (max-width: 1400px) {
       .product-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
     @media (max-width: 1024px) {
+      .products-main {
+        flex-direction: column;
+        padding: 24px 20px;
+      }
+
+      .filters-container {
+        width: 100%;
+      }
+
       .product-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -236,10 +268,6 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
 
       .search-section h1 {
         font-size: 32px;
-      }
-
-      .products-main {
-        padding: 24px 20px;
       }
 
       .product-grid {
@@ -302,6 +330,14 @@ export class ProductListComponent implements OnInit {
     pages: 0
   };
   searchTerm = '';
+  currentFilters: FilterState = {
+    category: '',
+    boutique: '',
+    minPrice: null,
+    maxPrice: null,
+    promotion: false,
+    sort: 'newest'
+  };
   loading = true;
   error = '';
   isLoggedIn = false;
@@ -329,7 +365,19 @@ export class ProductListComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.productService.searchProducts(this.searchTerm, this.pagination.page, this.pagination.limit)
+    const filters: any = {
+      search: this.searchTerm,
+      page: this.pagination.page,
+      limit: this.pagination.limit,
+      category: this.currentFilters.category || undefined,
+      boutique: this.currentFilters.boutique || undefined,
+      minPrice: this.currentFilters.minPrice || undefined,
+      maxPrice: this.currentFilters.maxPrice || undefined,
+      promotion: this.currentFilters.promotion || undefined,
+      sort: this.currentFilters.sort || undefined
+    };
+
+    this.productService.searchProducts(filters)
       .subscribe({
         next: (response: ProductSearchResponse) => {
           this.products = response.data;
@@ -352,12 +400,27 @@ export class ProductListComponent implements OnInit {
     });
   }
 
+  onFilterChange(filters: FilterState): void {
+    this.currentFilters = filters;
+    this.pagination.page = 1;
+    this.updateQueryParams();
+    this.loadProducts();
+  }
+
+  updateQueryParams(): void {
+    const queryParams: any = { page: this.pagination.page };
+    if (this.searchTerm) queryParams.q = this.searchTerm;
+    
+    this.router.navigate(['/products'], { 
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
+  }
+
   goToPage(page: number): void {
     if (page >= 1 && page <= this.pagination.pages) {
       this.pagination.page = page;
-      this.router.navigate(['/products'], { 
-        queryParams: { q: this.searchTerm || null, page }
-      });
+      this.updateQueryParams();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
