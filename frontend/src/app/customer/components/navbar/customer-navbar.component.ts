@@ -28,6 +28,7 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
           <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
         </ng-container>
         <ng-container *ngIf="isLoggedIn">
+          <a routerLink="/orders" class="nav-link">Mes commandes</a>
           <a (click)="logout()" class="nav-link btn-logout">Se déconnecter</a>
         </ng-container>
       </nav>

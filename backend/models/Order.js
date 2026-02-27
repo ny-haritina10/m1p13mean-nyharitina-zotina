@@ -6,14 +6,40 @@ const orderItemSchema = new mongoose.Schema({
     ref: 'Product',
     required: true
   },
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  nameSnapshot: {
+    type: String,
+    required: true
+  },
   quantity: {
     type: Number,
     required: true,
     min: 1
   },
-  unitPrice: {
+  unitPriceSnapshot: {
     type: Number,
     required: true
+  },
+  subtotal: {
+    type: Number,
+    required: true
+  }
+}, { _id: true });
+
+const sellerOrderSchema = new mongoose.Schema({
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELLED'],
+    default: 'PENDING'
   },
   subtotal: {
     type: Number,
@@ -47,32 +73,28 @@ const orderSchema = new mongoose.Schema({
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
-  },
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
     required: true,
     index: true
   },
-  products: {
+  sellers: [sellerOrderSchema],
+  items: {
     type: [orderItemSchema],
-    required: true
+    required: true,
+    validate: {
+      validator: function(v) {
+        return v && v.length > 0;
+      },
+      message: 'Order must have at least one item'
+    }
   },
   totalAmount: {
     type: Number,
     required: true
   },
-  deliveryAddress: {
-    street: String,
-    city: String,
-    phone: String
-  },
-  orderStatus: {
+  globalStatus: {
     type: String,
-    enum: ['pending', 'validated', 'preparing', 'ready', 'delivered', 'cancelled'],
-    default: 'pending',
-    index: true
+    enum: ['PENDING', 'IN_PROGRESS', 'READY', 'COMPLETED', 'CANCELLED'],
+    default: 'PENDING'
   },
   paymentMethod: {
     type: String,
@@ -84,19 +106,13 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'refunded'],
     default: 'pending'
   },
-  validatedAt: Date,
-  preparingAt: Date,
-  readyAt: Date,
-  deliveredAt: Date,
-  cancelledAt: Date,
-  cancellationReason: String,
-  cancelledBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  deliveryAddress: {
+    street: String,
+    city: String,
+    phone: String
   },
-  statusHistory: [statusHistorySchema],
-  internalNotes: String,
   customerNotes: String,
+  statusHistory: [statusHistorySchema],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -108,17 +124,36 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for performance
-orderSchema.index({ seller: 1, orderStatus: 1 });
-orderSchema.index({ seller: 1, createdAt: -1 });
-orderSchema.index({ customer: 1, createdAt: -1 });
+orderSchema.index({ 'sellers.seller': 1 });
+orderSchema.index({ createdAt: -1 });
 
-// Update timestamp on save
-orderSchema.pre('save', async function() {
+orderSchema.pre('save', function(next) {
   this.updatedAt = new Date();
+  this.globalStatus = this.computeGlobalStatus();
+  next();
 });
 
-// Static method to generate order number
+orderSchema.methods.computeGlobalStatus = function() {
+  if (!this.sellers || this.sellers.length === 0) {
+    return 'PENDING';
+  }
+
+  const statuses = this.sellers.map(s => s.status);
+  const hasCancelled = statuses.includes('CANCELLED');
+  const allPending = statuses.every(s => s === 'PENDING');
+  const allReady = statuses.every(s => s === 'READY');
+  const allCompleted = statuses.every(s => s === 'COMPLETED');
+  const anyPreparing = statuses.some(s => s === 'PREPARING' || s === 'CONFIRMED');
+
+  if (allCompleted) return 'COMPLETED';
+  if (allReady) return 'READY';
+  if (anyPreparing) return 'IN_PROGRESS';
+  if (hasCancelled && !anyPreparing) return 'CANCELLED';
+  if (allPending) return 'PENDING';
+  
+  return 'IN_PROGRESS';
+};
+
 orderSchema.statics.generateOrderNumber = async function() {
   const date = new Date();
   const prefix = `CMD-${date.getFullYear()}`;
@@ -137,52 +172,39 @@ orderSchema.statics.generateOrderNumber = async function() {
   return `${prefix}-${String(sequence).padStart(4, '0')}`;
 };
 
-// Method to update status
-orderSchema.methods.updateStatus = async function(status, userId, notes) {
-  const validTransitions = {
-    'pending': ['validated', 'cancelled'],
-    'validated': ['preparing', 'cancelled'],
-    'preparing': ['ready'],
-    'ready': ['delivered'],
-    'delivered': [],
-    'cancelled': []
-  };
+orderSchema.statics.VALID_STATUS_TRANSITIONS = {
+  'PENDING': ['CONFIRMED', 'CANCELLED'],
+  'CONFIRMED': ['PREPARING', 'CANCELLED'],
+  'PREPARING': ['READY'],
+  'READY': ['COMPLETED'],
+  'COMPLETED': [],
+  'CANCELLED': []
+};
 
-  if (!validTransitions[this.orderStatus]?.includes(status)) {
-    throw new Error(`Cannot transition from ${this.orderStatus} to ${status}`);
-  }
-
-  const now = new Date();
-  this.orderStatus = status;
+orderSchema.methods.updateSellerStatus = async function(sellerId, newStatus, userId, notes) {
+  const sellerOrder = this.sellers.find(s => s.seller.toString() === sellerId.toString());
   
-  // Update timestamp fields
-  switch(status) {
-    case 'validated':
-      this.validatedAt = now;
-      break;
-    case 'preparing':
-      this.preparingAt = now;
-      break;
-    case 'ready':
-      this.readyAt = now;
-      break;
-    case 'delivered':
-      this.deliveredAt = now;
-      break;
-    case 'cancelled':
-      this.cancelledAt = now;
-      break;
+  if (!sellerOrder) {
+    throw new Error('Seller not found in this order');
   }
 
-  // Add to status history
+  const validTransitions = this.constructor.VALID_STATUS_TRANSITIONS;
+  if (!validTransitions[sellerOrder.status]?.includes(newStatus)) {
+    throw new Error(`Cannot transition from ${sellerOrder.status} to ${newStatus}`);
+  }
+
+  sellerOrder.status = newStatus;
+  this.globalStatus = this.computeGlobalStatus();
+  
   this.statusHistory.push({
-    status,
-    changedAt: now,
+    status: newStatus,
+    changedAt: new Date(),
     changedBy: userId,
-    notes
+    notes: notes || `Status changed to ${newStatus}`
   });
 
-  return this.save();
+  await this.save();
+  return this;
 };
 
 module.exports = mongoose.model('Order', orderSchema);
