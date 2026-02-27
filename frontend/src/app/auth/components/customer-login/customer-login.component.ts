@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-customer-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="login-wrapper">
       <div class="login-left">
@@ -16,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
             <span class="material-icons">storefront</span>
           </div>
           <h1>Centre Commercial</h1>
-          <p>Panneau d'administration</p>
+          <p>Connexion client</p>
         </div>
         <div class="decoration">
           <div class="circle circle-1"></div>
@@ -29,20 +29,20 @@ import { AuthService } from '../../services/auth.service';
         <div class="login-card">
           <div class="card-header">
             <h2>Bienvenue</h2>
-            <p>Connectez-vous pour continuer</p>
+            <p>Connectez-vous à votre compte client</p>
           </div>
           
           <form (ngSubmit)="onLogin()" class="login-form">
             <div class="input-group">
-              <span class="material-icons input-icon">person</span>
+              <span class="material-icons input-icon">email</span>
               <input
-                type="text"
-                id="username"
-                [(ngModel)]="username"
-                name="username"
+                type="email"
+                id="email"
+                [(ngModel)]="email"
+                name="email"
                 required
-                placeholder="Nom d'utilisateur"
-                autocomplete="username"
+                placeholder="Email"
+                autocomplete="email"
               />
             </div>
             
@@ -69,6 +69,11 @@ import { AuthService } from '../../services/auth.service';
               <span *ngIf="isLoading" class="loading-spinner"></span>
             </button>
           </form>
+          
+          <div class="card-footer">
+            <p>Pas encore de compte? <a routerLink="/register">Créer un compte</a></p>
+            <p class="guest-link"><a routerLink="/">Continuer en tant qu'invité</a></p>
+          </div>
         </div>
         
         <p class="footer-text">&copy; 2026 Centre Commercial</p>
@@ -225,7 +230,6 @@ import { AuthService } from '../../services/auth.service';
       transform: translateY(-50%);
       color: #b2bec3;
       font-size: 20px;
-      transition: var(--transition);
     }
     
     .input-group input {
@@ -236,7 +240,7 @@ import { AuthService } from '../../services/auth.service';
       font-size: 15px;
       font-family: 'DM Sans', sans-serif;
       background: #faf9f6;
-      transition: var(--transition);
+      transition: all 0.3s ease;
     }
     
     .input-group input:focus {
@@ -281,7 +285,7 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 600;
       font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      transition: var(--transition);
+      transition: all 0.3s ease;
       margin-top: 8px;
       display: flex;
       align-items: center;
@@ -313,6 +317,36 @@ import { AuthService } from '../../services/auth.service';
       to { transform: rotate(360deg); }
     }
     
+    .card-footer {
+      text-align: center;
+      margin-top: 24px;
+    }
+    
+    .card-footer p {
+      color: #636e72;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .card-footer a {
+      color: #e94560;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .card-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .guest-link {
+      margin-top: 12px;
+    }
+    
+    .guest-link a {
+      color: #636e72;
+      font-weight: 400;
+    }
+    
     .footer-text {
       margin-top: 32px;
       color: #b2bec3;
@@ -334,8 +368,8 @@ import { AuthService } from '../../services/auth.service';
     }
   `]
 })
-export class LoginComponent {
-  username = '';
+export class CustomerLoginComponent {
+  email = '';
   password = '';
   errorMessage = '';
   isLoading = false;
@@ -349,15 +383,10 @@ export class LoginComponent {
     this.errorMessage = '';
     this.isLoading = true;
 
-    this.authService.login({ username: this.username, password: this.password })
+    this.authService.loginCustomer({ email: this.email, password: this.password })
       .subscribe({
         next: (response) => {
-          // Redirect based on role
-          if (response.user.role === 'boutique') {
-            this.router.navigate(['/seller']);
-          } else {
-            this.router.navigate(['/admin']);
-          }
+          this.router.navigate(['/customer']);
         },
         error: (err) => {
           this.isLoading = false;

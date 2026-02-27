@@ -170,9 +170,11 @@ class AdminSellerService {
       throw error;
     }
 
+    const hashedPassword = await User.hashPassword(password);
+
     const seller = new User({
       username,
-      password,
+      password: hashedPassword,
       role: 'boutique',
       status: 'pending',
       boutiqueName,

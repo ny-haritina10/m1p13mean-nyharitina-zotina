@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="login-wrapper">
       <div class="login-left">
@@ -16,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
             <span class="material-icons">storefront</span>
           </div>
           <h1>Centre Commercial</h1>
-          <p>Panneau d'administration</p>
+          <p>Créer un compte client</p>
         </div>
         <div class="decoration">
           <div class="circle circle-1"></div>
@@ -24,28 +24,51 @@ import { AuthService } from '../../services/auth.service';
           <div class="circle circle-3"></div>
         </div>
       </div>
-      
+
       <div class="login-right">
         <div class="login-card">
           <div class="card-header">
-            <h2>Bienvenue</h2>
-            <p>Connectez-vous pour continuer</p>
+            <h2>Créer un compte</h2>
+            <p>Rejoignez notre centre commercial</p>
           </div>
-          
-          <form (ngSubmit)="onLogin()" class="login-form">
+
+          <form (ngSubmit)="onRegister()" class="login-form">
+            <div class="input-row">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="firstName"
+                  [(ngModel)]="firstName"
+                  name="firstName"
+                  required
+                  placeholder="Prénom"
+                />
+              </div>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="lastName"
+                  [(ngModel)]="lastName"
+                  name="lastName"
+                  required
+                  placeholder="Nom"
+                />
+              </div>
+            </div>
+
             <div class="input-group">
-              <span class="material-icons input-icon">person</span>
+              <span class="material-icons input-icon">email</span>
               <input
-                type="text"
-                id="username"
-                [(ngModel)]="username"
-                name="username"
+                type="email"
+                id="email"
+                [(ngModel)]="email"
+                name="email"
                 required
-                placeholder="Nom d'utilisateur"
-                autocomplete="username"
+                placeholder="Email"
+                autocomplete="email"
               />
             </div>
-            
+
             <div class="input-group">
               <span class="material-icons input-icon">lock</span>
               <input
@@ -54,23 +77,45 @@ import { AuthService } from '../../services/auth.service';
                 [(ngModel)]="password"
                 name="password"
                 required
-                placeholder="Mot de passe"
-                autocomplete="current-password"
+                placeholder="Mot de passe (min 8 caractères)"
+                autocomplete="new-password"
               />
             </div>
-            
+
+            <div class="input-group">
+              <span class="material-icons input-icon">lock</span>
+              <input
+                type="password"
+                id="confirmPassword"
+                [(ngModel)]="confirmPassword"
+                name="confirmPassword"
+                required
+                placeholder="Confirmer le mot de passe"
+                autocomplete="new-password"
+              />
+            </div>
+
             <div *ngIf="errorMessage" class="error-message">
               <span class="material-icons">error</span>
               {{ errorMessage }}
             </div>
-            
+
+            <div *ngIf="successMessage" class="success-message">
+              <span class="material-icons">check_circle</span>
+              {{ successMessage }}
+            </div>
+
             <button type="submit" [disabled]="isLoading" class="login-btn">
-              <span *ngIf="!isLoading">Se connecter</span>
+              <span *ngIf="!isLoading">Créer un compte</span>
               <span *ngIf="isLoading" class="loading-spinner"></span>
             </button>
           </form>
+
+          <div class="card-footer">
+            <p>Déjà inscrit? <a routerLink="/customer-login">Se connecter</a></p>
+          </div>
         </div>
-        
+
         <p class="footer-text">&copy; 2026 Centre Commercial</p>
       </div>
     </div>
@@ -81,7 +126,7 @@ import { AuthService } from '../../services/auth.service';
       min-height: 100vh;
       background: #faf9f6;
     }
-    
+
     .login-left {
       flex: 1;
       background: #1a1a2e;
@@ -93,13 +138,13 @@ import { AuthService } from '../../services/auth.service';
       overflow: hidden;
       padding: 40px;
     }
-    
+
     .brand {
       position: relative;
       z-index: 2;
       text-align: center;
     }
-    
+
     .logo {
       width: 80px;
       height: 80px;
@@ -112,12 +157,12 @@ import { AuthService } from '../../services/auth.service';
       transform: rotate(-5deg);
       box-shadow: 0 8px 32px rgba(233, 69, 96, 0.4);
     }
-    
+
     .logo .material-icons {
       font-size: 40px;
       color: white;
     }
-    
+
     .brand h1 {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 32px;
@@ -126,26 +171,26 @@ import { AuthService } from '../../services/auth.service';
       margin-bottom: 8px;
       letter-spacing: -0.5px;
     }
-    
+
     .brand p {
       color: rgba(255, 255, 255, 0.6);
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
-    
+
     .decoration {
       position: absolute;
       inset: 0;
       pointer-events: none;
     }
-    
+
     .circle {
       position: absolute;
       border-radius: 50%;
       opacity: 0.1;
     }
-    
+
     .circle-1 {
       width: 400px;
       height: 400px;
@@ -153,7 +198,7 @@ import { AuthService } from '../../services/auth.service';
       top: -100px;
       right: -100px;
     }
-    
+
     .circle-2 {
       width: 300px;
       height: 300px;
@@ -161,7 +206,7 @@ import { AuthService } from '../../services/auth.service';
       bottom: -50px;
       left: -50px;
     }
-    
+
     .circle-3 {
       width: 150px;
       height: 150px;
@@ -170,7 +215,7 @@ import { AuthService } from '../../services/auth.service';
       left: 50%;
       transform: translate(-50%, -50%);
     }
-    
+
     .login-right {
       flex: 1;
       display: flex;
@@ -180,21 +225,21 @@ import { AuthService } from '../../services/auth.service';
       padding: 40px;
       background: #faf9f6;
     }
-    
+
     .login-card {
       width: 100%;
-      max-width: 380px;
+      max-width: 420px;
       background: white;
       border-radius: 24px;
-      padding: 48px 40px;
+      padding: 40px;
       box-shadow: 0 8px 40px rgba(26, 26, 46, 0.08);
     }
-    
+
     .card-header {
       text-align: center;
       margin-bottom: 32px;
     }
-    
+
     .card-header h2 {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 28px;
@@ -202,22 +247,31 @@ import { AuthService } from '../../services/auth.service';
       color: #1a1a2e;
       margin-bottom: 8px;
     }
-    
+
     .card-header p {
       color: #636e72;
       font-size: 14px;
     }
-    
+
     .login-form {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
-    
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .input-row .input-group {
+      flex: 1;
+    }
+
     .input-group {
       position: relative;
     }
-    
+
     .input-icon {
       position: absolute;
       left: 16px;
@@ -225,9 +279,8 @@ import { AuthService } from '../../services/auth.service';
       transform: translateY(-50%);
       color: #b2bec3;
       font-size: 20px;
-      transition: var(--transition);
     }
-    
+
     .input-group input {
       width: 100%;
       padding: 16px 16px 16px 48px;
@@ -236,24 +289,23 @@ import { AuthService } from '../../services/auth.service';
       font-size: 15px;
       font-family: 'DM Sans', sans-serif;
       background: #faf9f6;
-      transition: var(--transition);
+      transition: all 0.3s ease;
     }
-    
+
+    .input-row .input-group input {
+      padding-left: 16px;
+    }
+
     .input-group input:focus {
       outline: none;
       border-color: #e94560;
       background: white;
     }
-    
-    .input-group input:focus + .input-icon,
-    .input-group:focus-within .input-icon {
-      color: #e94560;
-    }
-    
+
     .input-group input::placeholder {
       color: #b2bec3;
     }
-    
+
     .error-message {
       display: flex;
       align-items: center;
@@ -265,11 +317,27 @@ import { AuthService } from '../../services/auth.service';
       color: #e74c3c;
       font-size: 13px;
     }
-    
+
     .error-message .material-icons {
       font-size: 18px;
     }
-    
+
+    .success-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #f0fff4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      color: #16a34a;
+      font-size: 13px;
+    }
+
+    .success-message .material-icons {
+      font-size: 18px;
+    }
+
     .login-btn {
       width: 100%;
       padding: 16px;
@@ -281,25 +349,25 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 600;
       font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      transition: var(--transition);
+      transition: all 0.3s ease;
       margin-top: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 54px;
     }
-    
+
     .login-btn:hover:not(:disabled) {
       background: #d63651;
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(233, 69, 96, 0.3);
     }
-    
+
     .login-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
-    
+
     .loading-spinner {
       width: 20px;
       height: 20px;
@@ -308,36 +376,57 @@ import { AuthService } from '../../services/auth.service';
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    
+
+    .card-footer {
+      text-align: center;
+      margin-top: 24px;
+      color: #636e72;
+      font-size: 14px;
+    }
+
+    .card-footer a {
+      color: #e94560;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .card-footer a:hover {
+      text-decoration: underline;
+    }
+
     .footer-text {
       margin-top: 32px;
       color: #b2bec3;
       font-size: 12px;
     }
-    
+
     @media (max-width: 900px) {
       .login-left {
         display: none;
       }
-      
+
       .login-right {
         padding: 24px;
       }
-      
+
       .login-card {
         padding: 32px 24px;
       }
     }
   `]
 })
-export class LoginComponent {
-  username = '';
+export class RegisterComponent {
+  firstName = '';
+  lastName = '';
+  email = '';
   password = '';
+  confirmPassword = '';
   errorMessage = '';
+  successMessage = '';
   isLoading = false;
 
   constructor(
@@ -345,24 +434,38 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  onLogin(): void {
+  onRegister(): void {
     this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'Les mots de passe ne correspondent pas';
+      return;
+    }
+
+    if (this.password.length < 8) {
+      this.errorMessage = 'Le mot de passe doit contenir au moins 8 caractères';
+      return;
+    }
+
     this.isLoading = true;
 
-    this.authService.login({ username: this.username, password: this.password })
-      .subscribe({
-        next: (response) => {
-          // Redirect based on role
-          if (response.user.role === 'boutique') {
-            this.router.navigate(['/seller']);
-          } else {
-            this.router.navigate(['/admin']);
-          }
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = err.error?.error || 'Erreur de connexion';
-        }
-      });
+    this.authService.registerCustomer({
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: (response) => {
+        this.successMessage = 'Compte créé avec succès! Redirection...';
+        setTimeout(() => {
+          this.router.navigate(['/customer']);
+        }, 1500);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Erreur lors de la création du compte';
+      }
+    });
   }
 }

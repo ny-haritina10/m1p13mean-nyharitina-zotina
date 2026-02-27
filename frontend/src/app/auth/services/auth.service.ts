@@ -6,21 +6,50 @@ export interface LoginResponse {
   token: string;
   user: {
     id: string;
-    username: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
     role: string;
   };
+}
+
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = 'http://localhost:5000/api';
+  private customerApiUrl = 'http://localhost:5000/api/customers';
 
   constructor(private http: HttpClient) {}
 
   login(credentials: { username: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
+      tap(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      })
+    );
+  }
+
+  registerCustomer(data: RegisterData): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.customerApiUrl}/register`, data).pipe(
+      tap(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      })
+    );
+  }
+
+  loginCustomer(credentials: { email: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.customerApiUrl}/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));

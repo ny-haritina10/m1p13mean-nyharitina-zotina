@@ -2,12 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../../auth/services/auth.service';
 
-interface MenuItem {
+interface MenuItemDisplay {
   label: string;
   icon?: string;
   route?: string;
-  children?: MenuItem[];
+  children?: MenuItemDisplay[];
 }
 
 @Component({
@@ -185,7 +186,7 @@ interface MenuItem {
       font-size: 13px;
       border-radius: 10px;
       transition: all 0.2s ease;
-      margin: 0 4px; /* Slight margin to look cleaner */
+      margin: 0 4px;
     }
 
     .submenu-link:hover {
@@ -238,7 +239,9 @@ export class SidebarComponent implements OnInit {
 
   expandedMenus = new Set<string>();
 
-  menuItems: MenuItem[] = [
+  menuItems: MenuItemDisplay[] = [];
+
+  private adminMenuItems: MenuItemDisplay[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/admin/dashboard' },
     {
       label: 'Plan du Centre',
@@ -247,7 +250,7 @@ export class SidebarComponent implements OnInit {
     },
     {
       label: 'Gestion Locataires',
-      icon: 'store',
+      icon: 'people',
       children: [
         { label: 'Liste vendeurs', route: '/admin/sellers' }
       ]
@@ -289,9 +292,49 @@ export class SidebarComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router) {}
+  private sellerMenuItems: MenuItemDisplay[] = [
+    { label: 'Ma Boutique', icon: 'storefront', route: '/seller/boutique' },
+    {
+      label: 'Mes Produits',
+      icon: 'inventory',
+      children: [
+        { label: 'Catalogue', route: '/seller/products' },
+        { label: 'Catégories', route: '/seller/categories' }
+      ]
+    },
+    {
+      label: 'Stock',
+      icon: 'warehouse',
+      children: [
+        { label: 'État des stocks', route: '/seller/stock' },
+        { label: 'Mouvements', route: '/seller/stock/movements' }
+      ]
+    },
+    {
+      label: 'Ventes',
+      icon: 'shopping_cart',
+      children: [
+        { label: 'Liste ventes', route: '/seller/sales' },
+        { label: 'Rapport', route: '/seller/sales/report' },
+        { label: 'Promotions', route: '/seller/promotions' }
+      ]
+    },
+    {
+      label: 'Commandes',
+      icon: 'shopping_bag',
+      children: [
+        { label: 'Liste commandes', route: '/seller/orders' }
+      ]
+    }
+  ];
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    this.loadMenu();
     this.expandActiveSubmenu();
 
     this.router.events.pipe(
@@ -301,7 +344,16 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  toggleSubmenu(item: MenuItem): void {
+  loadMenu(): void {
+    const user = this.authService.getUser();
+    if (user?.role === 'boutique') {
+      this.menuItems = this.sellerMenuItems;
+    } else {
+      this.menuItems = this.adminMenuItems;
+    }
+  }
+
+  toggleSubmenu(item: MenuItemDisplay): void {
     if (this.expandedMenus.has(item.label)) {
       this.expandedMenus.delete(item.label);
     } else {
@@ -310,7 +362,6 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  // Opens the parent menu based on URL, but does NOT apply styles (CSS handles styles)
   private expandActiveSubmenu(): void {
     const currentUrl = this.router.url;
 

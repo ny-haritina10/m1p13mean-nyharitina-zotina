@@ -6,19 +6,25 @@ require("dotenv").config();
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB Connected");
         const seedAdmin = require("./seeders/userSeeder");
+        const seedMenus = require("./seeders/menuSeeder");
         seedAdmin();
+        seedMenus();
     })
     .catch(err => console.log(err));
 
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/customers", require("./routes/customer.routes"));
+app.use("/api/products", require("./routes/product.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/seller", require("./routes/seller.routes"));
+app.use("/api/menu", require("./routes/menu.routes"));
 
 app.get("/", (req, res) => {
     res.json({ message: "API is working 🚀" });

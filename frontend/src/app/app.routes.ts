@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/components/login/login.component';
+import { RegisterComponent } from './auth/components/register/register.component';
+import { CustomerLoginComponent } from './auth/components/customer-login/customer-login.component';
 import { AdminHomeComponent } from './admin/components/admin-home/admin-home.component';
 import { LayoutComponent } from './admin/layout/layout.component';
 import { DashboardComponent } from './admin/pages/dashboard/dashboard.component';
@@ -18,9 +20,24 @@ import { SpaceAvailabilityComponent } from './admin/pages/availability/space-ava
 import { AssignSpaceComponent } from './admin/pages/assign-space/assign-space.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AdminGuard } from './auth/guards/admin.guard';
+import { sellerGuard } from './auth/guards/seller.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'customer-login', component: CustomerLoginComponent },
+  {
+    path: 'customer',
+    loadChildren: () => import('./customer/customer.routes').then(m => m.CUSTOMER_ROUTES)
+  },
+  {
+    path: 'products',
+    loadComponent: () => import('./customer/pages/product-list/product-list.component').then(m => m.ProductListComponent)
+  },
+  {
+    path: '',
+    loadComponent: () => import('./customer/pages/home/home.component').then(m => m.CustomerHomeComponent)
+  },
   {
     path: 'admin',
     component: LayoutComponent,
@@ -44,5 +61,11 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  {
+    path: 'seller',
+    loadChildren: () => import('./seller/seller.routes').then(m => m.SELLER_ROUTES),
+    canActivate: [AuthGuard, sellerGuard]
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];
