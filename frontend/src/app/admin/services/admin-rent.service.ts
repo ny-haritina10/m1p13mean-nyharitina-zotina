@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface RentPayment {
   _id: string;
@@ -40,7 +41,7 @@ export interface RentStats {
   providedIn: 'root'
 })
 export class AdminRentService {
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = `${environment.apiUrl}/admin`;
 
   constructor(private http: HttpClient) {}
 

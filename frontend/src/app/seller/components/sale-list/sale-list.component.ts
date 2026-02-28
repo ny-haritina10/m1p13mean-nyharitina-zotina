@@ -15,10 +15,6 @@ import { SaleService, Sale } from '../../services/sale.service';
           <h1>🛒 Ventes</h1>
           <p>Historique des ventes et enregistrements</p>
         </div>
-        <button routerLink="/seller/sales/create" class="btn-primary">
-          <span class="material-icons">add</span>
-          Nouvelle vente
-        </button>
       </div>
 
       <!-- Filters -->

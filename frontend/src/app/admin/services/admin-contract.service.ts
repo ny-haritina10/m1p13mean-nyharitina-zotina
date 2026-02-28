@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Seller } from './admin-seller.service';
 import { RentalSpace } from './admin-space.service';
+import { environment } from '../../../environments/environment';
 
 export interface Contract {
   _id: string;
@@ -32,7 +33,7 @@ export interface CreateContractDto {
   providedIn: 'root'
 })
 export class AdminContractService {
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = `${environment.apiUrl}/admin`;
 
   constructor(private http: HttpClient) {}
 

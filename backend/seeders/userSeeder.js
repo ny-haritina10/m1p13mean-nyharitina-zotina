@@ -1,7 +1,13 @@
+const mongoose = require('mongoose');
+require('dotenv').config();
 const User = require('../models/User');
 
 const seedAdmin = async () => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
+    }
+
     const adminExists = await User.findOne({ username: 'admin' });
 
     if (adminExists) {

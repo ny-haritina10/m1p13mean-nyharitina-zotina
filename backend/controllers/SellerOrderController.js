@@ -251,17 +251,36 @@ exports.createOrder = async (req, res, next) => {
     // Generate order number
     const orderNumber = await Order.generateOrderNumber();
 
-    // Create order
+    // Transform products to items format
+    const items = products.map(p => ({
+      product: p.product || p.productId,
+      seller: req.user.userId,
+      nameSnapshot: p.name || 'Product',
+      quantity: p.quantity,
+      unitPriceSnapshot: p.unitPrice,
+      subtotal: p.subtotal
+    }));
+
+    // Create order with proper format
     const order = new Order({
       orderNumber,
       customer,
-      seller: req.user.userId,
-      products,
+      sellers: [{
+        seller: req.user.userId,
+        status: 'PENDING',
+        subtotal: totalAmount
+      }],
+      items: items,
       totalAmount,
-      deliveryAddress,
+      globalStatus: 'PENDING',
       paymentMethod,
+      paymentStatus: 'pending',
+      deliveryAddress,
       customerNotes,
-      orderStatus: 'pending'
+      statusHistory: [{
+        status: 'PENDING',
+        notes: 'Commande créée'
+      }]
     });
 
     await order.save();

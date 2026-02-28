@@ -5,17 +5,27 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+    origin: [
+        'http://localhost:4200',
+        'https://m1p13mean-nyharitina-zotina.netlify.app'
+        // '*'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-Id']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB Connected");
-        const seedAdmin = require("./seeders/userSeeder");
-        const seedMenus = require("./seeders/menuSeeder");
-        seedAdmin();
-        seedMenus();
+        
+        // To run seeders manually: npm run seed
+        // require("./seeders/runAllSeeders");
     })
     .catch(err => console.log(err));
 
