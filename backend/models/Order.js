@@ -127,10 +127,9 @@ const orderSchema = new mongoose.Schema({
 orderSchema.index({ 'sellers.seller': 1 });
 orderSchema.index({ createdAt: -1 });
 
-orderSchema.pre('save', function(next) {
+orderSchema.pre('save', async function() {
   this.updatedAt = new Date();
   this.globalStatus = this.computeGlobalStatus();
-  next();
 });
 
 orderSchema.methods.computeGlobalStatus = function() {

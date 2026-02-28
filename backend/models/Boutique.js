@@ -60,9 +60,8 @@ const boutiqueSchema = new mongoose.Schema({
   }
 });
 
-boutiqueSchema.pre('save', function(next) {
+boutiqueSchema.pre('save', async function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Boutique', boutiqueSchema);

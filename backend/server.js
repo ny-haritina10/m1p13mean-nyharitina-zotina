@@ -23,10 +23,6 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB Connected");
-        const seedAdmin = require("./seeders/userSeeder");
-        const seedMenus = require("./seeders/menuSeeder");
-        seedAdmin();
-        seedMenus();
     })
     .catch(err => console.log(err));
 

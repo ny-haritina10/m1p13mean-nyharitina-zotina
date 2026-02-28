@@ -35,25 +35,37 @@ interface OrderProduct {
         <!-- Customer Info -->
         <div class="form-section">
           <h2>👤 Informations Client</h2>
+          <div class="form-group">
+            <label>Client *</label>
+            <select
+              [(ngModel)]="selectedCustomerId"
+              name="customer"
+              required
+            >
+              <option value="">Sélectionner un client</option>
+              <option *ngFor="let c of customers" [value]="c._id">
+                {{ c.firstName }} {{ c.lastName }} ({{ c.phone }})
+              </option>
+            </select>
+          </div>
+          
           <div class="form-row">
             <div class="form-group">
-              <label>Nom du client *</label>
+              <label>Nom du client</label>
               <input
                 type="text"
                 [(ngModel)]="order.customerName"
                 name="customerName"
-                required
                 placeholder="Jean Dupont"
               />
             </div>
 
             <div class="form-group">
-              <label>Téléphone *</label>
+              <label>Téléphone</label>
               <input
                 type="tel"
                 [(ngModel)]="order.customerPhone"
                 name="customerPhone"
-                required
                 placeholder="+261 34 00 000 00"
               />
             </div>
@@ -535,6 +547,8 @@ interface OrderProduct {
 export class OrderFormComponent implements OnInit {
   products: Product[] = [];
   orderProducts: OrderProduct[] = [];
+  customers: { _id: string; username: string; firstName?: string; lastName?: string; phone?: string }[] = [];
+  selectedCustomerId = '';
 
   selectedProductId = '';
   selectedProductMax = 0;
@@ -565,6 +579,7 @@ export class OrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCustomers();
   }
 
   loadProducts(): void {
@@ -576,6 +591,17 @@ export class OrderFormComponent implements OnInit {
         console.error('Error loading products:', err);
       }
     });
+  }
+
+  loadCustomers(): void {
+    // For now, use seeded customer IDs - in production, fetch from API
+    this.customers = [
+      { _id: '69a312af7165e868e1026d5f', username: 'customer1', firstName: 'Rasoa', lastName: 'Rakoto', phone: '+261 32 11 111 11' },
+      { _id: '69a312af7165e868e1026d69', username: 'customer2', firstName: 'Mbola', lastName: 'Ratsimba', phone: '+261 32 22 222 22' },
+      { _id: '69a312af7165e868e1026d6d', username: 'customer3', firstName: 'Tahiana', lastName: 'Andria', phone: '+261 32 33 333 33' },
+      { _id: '69a312af7165e868e1026d70', username: 'customer4', firstName: 'Fanilo', lastName: 'Randria', phone: '+261 32 44 444 44' },
+      { _id: '69a312b07165e868e1026d73', username: 'customer5', firstName: 'Miaraka', lastName: 'Rabe', phone: '+261 32 55 555 55' }
+    ];
   }
 
   onProductSelect(): void {
@@ -624,9 +650,8 @@ export class OrderFormComponent implements OnInit {
   }
 
   isValid(): boolean {
-    return this.orderProducts.length > 0 &&
-           this.order.customerName &&
-           this.order.customerPhone &&
+    return this.selectedCustomerId &&
+           this.orderProducts.length > 0 &&
            this.order.paymentMethod &&
            this.order.paymentStatus;
   }
@@ -642,12 +667,22 @@ export class OrderFormComponent implements OnInit {
     this.isLoading = true;
     this.message = '';
 
-    // Find customer (in real app, you'd have a customer selection)
-    // For now, we'll create a placeholder
+    // Use selected customer
+    const customerId = this.selectedCustomerId;
+    
+    if (!customerId) {
+      this.isLoading = false;
+      this.isError = true;
+      this.message = 'Veuillez sélectionner un client';
+      return;
+    }
+
     const orderData = {
-      customer: '699c9ec8e39df7c778bc0dbc', // Placeholder - should be selected from customers
+      customer: customerId,
       products: this.orderProducts.map(p => ({
+        productId: p.productId,
         product: p.productId,
+        name: p.name,
         quantity: p.quantity,
         unitPrice: p.unitPrice,
         subtotal: p.subtotal
