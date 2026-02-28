@@ -10,28 +10,47 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
     <header class="header">
-      <div class="logo" routerLink="/">
-        <span class="material-icons">storefront</span>
-        <span>Centre Commercial</span>
+      <div class="header-left">
+        <div class="logo" routerLink="/">
+          <span class="material-icons">storefront</span>
+          <span>Centre Commercial</span>
+        </div>
+        <nav class="nav-main">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Accueil</a>
+          <a routerLink="/products" routerLinkActive="active" class="nav-link">Produits</a>
+          <a routerLink="/boutiques" routerLinkActive="active" class="nav-link">Boutiques</a>
+        </nav>
       </div>
-      <nav class="nav">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Accueil</a>
-        <a routerLink="/products" routerLinkActive="active" class="nav-link">Produits</a>
-        
-        <a routerLink="/cart" class="nav-link cart-link">
+
+      <div class="header-right">
+        <a routerLink="/cart" class="cart-link" title="Panier">
           <span class="material-icons">shopping_cart</span>
           <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
         </a>
-        
-        <ng-container *ngIf="!isLoggedIn">
-          <a routerLink="/customer-login" class="nav-link">Connexion</a>
-          <a routerLink="/register" class="nav-link btn-register">Créer un compte</a>
-        </ng-container>
-        <ng-container *ngIf="isLoggedIn">
+
+        <div class="auth-buttons" *ngIf="!isLoggedIn">
+          <a routerLink="/customer-login" [queryParams]="{email: 'rasoa@example.com', password: 'password123'}" class="btn-customer">
+            <span class="material-icons">person</span>
+            <span class="btn-text">Connexion Client</span>
+          </a>
+          <a routerLink="/login" [queryParams]="{username: 'vendeur1', password: 'password123'}" class="btn-backoffice">
+            <span class="material-icons">admin_panel_settings</span>
+            <span class="btn-text">Connexion Boutique</span>
+          </a>
+          <a routerLink="/login" [queryParams]="{username: 'admin', password: 'admin'}" class="btn-backoffice">
+            <span class="material-icons">admin_panel_settings</span>
+            <span class="btn-text">Connexion Admin</span>
+          </a>
+        </div>
+
+        <div class="user-menu" *ngIf="isLoggedIn">
           <a routerLink="/orders" class="nav-link">Mes commandes</a>
-          <a (click)="logout()" class="nav-link btn-logout">Se déconnecter</a>
-        </ng-container>
-      </nav>
+          <a (click)="logout()" class="nav-link btn-logout">
+            <span class="material-icons">logout</span>
+            Se déconnecter
+          </a>
+        </div>
+      </div>
     </header>
   `,
   styles: [`
@@ -39,9 +58,24 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 40px;
+      padding: 12px 40px;
       background: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
 
     .logo {
@@ -60,62 +94,61 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
       font-size: 28px;
     }
 
-    .nav {
+    .nav-main {
       display: flex;
-      gap: 20px;
-      align-items: center;
+      gap: 24px;
     }
 
     .nav-link {
       text-decoration: none;
       color: #636e72;
       font-weight: 500;
-      transition: color 0.3s;
+      font-size: 14px;
+      transition: all 0.2s;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .nav-link:hover, .nav-link.active {
       color: #e94560;
     }
 
-    .btn-register {
-      background: #e94560;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    .btn-register:hover {
-      background: #d63651;
-    }
-
-    .btn-logout {
-      background: #ef4444;
-      color: white !important;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    .btn-logout:hover {
-      background: #dc2626;
+    .nav-link .material-icons {
+      font-size: 20px;
     }
 
     .cart-link {
       position: relative;
       display: flex;
       align-items: center;
-      padding: 8px;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      transition: all 0.2s;
+    }
+
+    .cart-link:hover {
+      background: #f0f0f0;
     }
 
     .cart-link .material-icons {
-      font-size: 24px;
+      font-size: 22px;
+      color: #636e72;
+    }
+
+    .cart-link:hover .material-icons {
+      color: #e94560;
     }
 
     .cart-badge {
       position: absolute;
-      top: 0;
-      right: 0;
-      background: #ef4444;
+      top: -4px;
+      right: -4px;
+      background: #e94560;
       color: white;
       font-size: 11px;
       font-weight: 600;
@@ -128,11 +161,95 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
       padding: 0 4px;
     }
 
-    @media (max-width: 640px) {
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-customer, .btn-backoffice {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .btn-customer {
+      background: #f8f9fa;
+      color: #636e72;
+      border: 1px solid #e0e0e0;
+    }
+
+    .btn-customer:hover {
+      background: #e94560;
+      color: white;
+      border-color: #e94560;
+    }
+
+    .btn-backoffice {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    .btn-backoffice:hover {
+      background: #2d2d4a;
+    }
+
+    .btn-customer .material-icons,
+    .btn-backoffice .material-icons {
+      font-size: 18px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-logout {
+      background: #fee2e2;
+      color: #dc2626 !important;
+      padding: 8px 14px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-logout:hover {
+      background: #fecaca;
+    }
+
+    .btn-logout .material-icons {
+      font-size: 18px;
+    }
+
+    @media (max-width: 900px) {
       .header {
-        padding: 16px 20px;
+        padding: 12px 20px;
         flex-direction: column;
         gap: 16px;
+      }
+
+      .header-left, .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-main {
+        display: none;
+      }
+
+      .btn-text {
+        display: none;
+      }
+
+      .btn-customer, .btn-backoffice {
+        padding: 10px;
       }
     }
   `]
@@ -141,14 +258,14 @@ export class CustomerNavbarComponent implements OnInit {
   private authService: AuthService = inject(AuthService);
   private router: Router = inject(Router);
   private cartService: CartService = inject(CartService);
-  
+
   cartCount = 0;
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe((cart: Cart | null) => {
       this.cartCount = cart?.totalQuantity || 0;
     });
-    
+
     this.cartService.getCart().subscribe({
       next: (response: { data: { totalQuantity: number } }) => {
         this.cartCount = response.data.totalQuantity;
