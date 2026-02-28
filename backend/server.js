@@ -5,7 +5,18 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+    origin: [
+        'http://localhost:4200',
+        'https://m1p13mean-nyharitina-zotina.netlify.app' 
+        // '*' 
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface CartItem {
   productId: string;
@@ -40,7 +41,7 @@ const SESSION_ID_KEY = 'cart_session_id';
   providedIn: 'root'
 })
 export class CartService {
-  private apiUrl = 'http://localhost:5000/api/cart';
+  private apiUrl = `${environment.apiUrl}/cart`;
   private cartSubject = new BehaviorSubject<Cart | null>(null);
   cart$ = this.cartSubject.asObservable();
 
