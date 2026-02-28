@@ -45,7 +45,6 @@ const spaces = [
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    }
 
     await RentalSpace.deleteMany({});
     console.log('Cleared existing spaces');
@@ -68,14 +67,10 @@ async function seed() {
     console.log(`  Available: ${available}`);
     console.log(`  Maintenance: ${maintenance}`);
 
-    
-    console.log('\nDisconnected from MongoDB');
-    
   } catch (error) {
     console.error('Seed error:', error);
-    
   }
 }
 
 
-module.exports = seed();
+module.exports = seed;

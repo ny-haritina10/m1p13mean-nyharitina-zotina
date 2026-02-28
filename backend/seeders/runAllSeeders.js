@@ -17,10 +17,12 @@ async function runAllSeeders() {
     const contractSeeder = require('./contractSeeder.js');
     const rentPaymentSeeder = require('./rentPaymentSeeder.js');
     const sellerDataSeeder = require('./sellerDataSeeder.js');
+    const productSeeder = require('./productSeeder.js');
     const stockMovementSeeder = require('./stockMovementSeeder.js');
     const saleSeeder = require('./saleSeeder.js');
     const dailySalesSeeder = require('./dailySalesSeeder.js');
     const orderSeeder = require('./orderSeeder.js');
+    const menuSeeder = require('./menuSeeder.js');
 
     console.log('\n📦 Running: User (Admin)...');
     await userSeeder();
@@ -46,6 +48,10 @@ async function runAllSeeders() {
     await sellerDataSeeder();
     console.log('✅ Seller Data completed');
 
+    console.log('\n📦 Running: Products...');
+    await productSeeder();
+    console.log('✅ Products completed');
+
     console.log('\n📦 Running: Stock Movements...');
     await stockMovementSeeder();
     console.log('✅ Stock Movements completed');
@@ -62,6 +68,10 @@ async function runAllSeeders() {
     await orderSeeder();
     console.log('✅ Orders completed');
 
+    console.log('\n📦 Running: Menus...');
+    await menuSeeder();
+    console.log('✅ Menus completed');
+
     console.log('\n===========================================');
     console.log('✅ ALL SEEDERS COMPLETED');
     console.log('===========================================\n');
@@ -74,6 +84,7 @@ async function runAllSeeders() {
     const Sale = require('../models/Sale');
     const Order = require('../models/Order');
     const RentPayment = require('../models/RentPayment');
+    const MenuItem = require('../models/MenuItem');
 
     console.log('📊 Database Summary:');
     console.log(`  - Admins: ${await User.countDocuments({ role: 'admin' })}`);
@@ -85,11 +96,15 @@ async function runAllSeeders() {
     console.log(`  - Products: ${await Product.countDocuments()}`);
     console.log(`  - Sales: ${await Sale.countDocuments()}`);
     console.log(`  - Orders: ${await Order.countDocuments()}`);
+    console.log(`  - Menu Items: ${await MenuItem.countDocuments()}`);
 
-    console.log('\n👋 Seeders finished, keeping connection open for server');
+    console.log('\n👉 Seeders finished, keeping connection open for server');
   } catch (error) {
     console.error('❌ Fatal error:', error.message);
+  } finally {
+    // Do NOT close the connection - server needs it
+    // Connection will be closed when server shuts down
   }
 }
 
-runAllSeeders();
+module.exports = runAllSeeders;

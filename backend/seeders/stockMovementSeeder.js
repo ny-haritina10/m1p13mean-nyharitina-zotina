@@ -8,13 +8,11 @@ const StockMovement = require('../models/StockMovement');
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    }
 
     const seller = await User.findOne({ username: 'vendeur1' });
     if (!seller) {
       console.log('Seller vendeur1 not found.');
-      
-      
+      return;
     }
     console.log(`Found seller: ${seller.username}`);
 
@@ -24,8 +22,7 @@ async function seed() {
     const existingMovements = await StockMovement.countDocuments({ seller: seller._id });
     if (existingMovements > 0) {
       console.log(`Stock movements already exist: ${existingMovements}`);
-      
-      
+      return;
     }
 
     const movementsData = [];
@@ -115,14 +112,10 @@ async function seed() {
     const outCount = await StockMovement.countDocuments({ seller: seller._id, type: 'out' });
     console.log(`Entry: ${entryCount}, Out: ${outCount}`);
 
-    
-    console.log('Disconnected from MongoDB');
-    
   } catch (error) {
     console.error('Error:', error.message);
-    
   }
 }
 
 
-module.exports = seed();
+module.exports = seed;

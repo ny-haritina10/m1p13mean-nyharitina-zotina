@@ -35,10 +35,9 @@ const PRODUCTS = [
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    }
 
     let seller = await User.findOne({ role: 'boutique', status: 'approved' });
-    
+
     if (!seller) {
       console.log('No approved seller found. Creating one...');
       const hashedPassword = await User.hashPassword('boutique123');
@@ -69,14 +68,10 @@ async function seed() {
     await Product.insertMany(productsToCreate);
     console.log(PRODUCTS.length + ' products seeded successfully');
 
-    
-    console.log('Disconnected from MongoDB');
-    
   } catch (error) {
     console.error('Error:', error.message);
-    
   }
 }
 
 
-module.exports = seed();
+module.exports = seed;

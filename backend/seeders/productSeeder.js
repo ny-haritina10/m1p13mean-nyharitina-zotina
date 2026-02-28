@@ -214,15 +214,12 @@ const PRODUCTS = [
 
 const seedProducts = async () => {
   try {
-    const mongoose = require('mongoose');
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    
     const User = require('../models/User');
     const seller = await User.findOne({ role: 'boutique', status: 'approved' });
-    
+
     if (!seller) {
       console.log('No approved seller found. Please create a seller first.');
-      
+      return;
     }
 
     // Clear existing products for this seller
@@ -241,12 +238,9 @@ const seedProducts = async () => {
     await Product.insertMany(productsToCreate);
     console.log(`${PRODUCTS.length} products seeded successfully`);
 
-    
   } catch (error) {
     console.error('Error seeding products:', error.message);
-    
   }
 };
 
-seedProducts();
-module.exports = productSeeder;
+module.exports = seedProducts;

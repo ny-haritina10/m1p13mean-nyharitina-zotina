@@ -129,14 +129,10 @@ async function seed() {
     const availableCount = await RentalSpace.countDocuments({ status: 'available' });
     console.log(`Total available spaces: ${availableCount}`);
 
-    
-    console.log('Disconnected from MongoDB');
-    
   } catch (error) {
     console.error('Error:', error.message);
-    
   }
 }
 
 
-module.exports = seed();
+module.exports = seed;

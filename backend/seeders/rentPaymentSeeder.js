@@ -8,15 +8,13 @@ const RentPayment = require('../models/RentPayment');
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    }
 
     const contracts = await Contract.find({ status: 'active' }).populate('seller');
     console.log(`Found ${contracts.length} active contracts`);
 
     if (contracts.length === 0) {
       console.log('No active contracts found. Please run contractSeeder first.');
-      
-      
+      return;
     }
 
     const currentDate = new Date();
@@ -75,14 +73,10 @@ async function seed() {
     const paidCount = await RentPayment.countDocuments({ status: 'paid' });
     console.log(`Pending: ${pendingCount}, Paid: ${paidCount}`);
 
-    
-    console.log('Disconnected from MongoDB');
-    
   } catch (error) {
     console.error('Error:', error.message);
-    
   }
 }
 
 
-module.exports = seed();
+module.exports = seed;

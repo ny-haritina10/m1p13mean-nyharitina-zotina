@@ -21,13 +21,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
+    .then(async () => {
         console.log("MongoDB Connected");
-        
+
         // To run seeders manually: npm run seed
-        // require("./seeders/runAllSeeders");
+        // Auto-run seeders on server start (optional)
+        const runAllSeeders = require("./seeders/runAllSeeders");
+        await runAllSeeders();
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log("MongoDB connection error:", err));
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/customers", require("./routes/customer.routes"));
