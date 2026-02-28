@@ -9,13 +9,13 @@ const Product = require('../models/Product');
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    console.log('Connected to MongoDB');
+    }
 
     const seller = await User.findOne({ username: 'vendeur1' });
     if (!seller) {
       console.log('Seller vendeur1 not found. Please run sellerSeeder first.');
-      await mongoose.disconnect();
-      process.exit(0);
+      
+      
     }
     console.log(`Found seller: ${seller.username} - ${seller.boutiqueName}`);
 
@@ -231,13 +231,14 @@ async function seed() {
     console.log(`Categories: ${categories.length}`);
     console.log(`Products: ${await Product.countDocuments({ seller: seller._id })}`);
 
-    await mongoose.disconnect();
+    
     console.log('Disconnected from MongoDB');
-    process.exit(0);
+    
   } catch (error) {
     console.error('Error:', error.message);
-    process.exit(1);
+    
   }
 }
 
-seed();
+
+module.exports = seed();

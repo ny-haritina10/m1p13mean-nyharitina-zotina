@@ -222,7 +222,7 @@ const seedProducts = async () => {
     
     if (!seller) {
       console.log('No approved seller found. Please create a seller first.');
-      process.exit(1);
+      
     }
 
     // Clear existing products for this seller
@@ -241,11 +241,12 @@ const seedProducts = async () => {
     await Product.insertMany(productsToCreate);
     console.log(`${PRODUCTS.length} products seeded successfully`);
 
-    mongoose.disconnect();
+    
   } catch (error) {
     console.error('Error seeding products:', error.message);
-    process.exit(1);
+    
   }
 };
 
 seedProducts();
+module.exports = productSeeder;

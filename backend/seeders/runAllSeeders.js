@@ -3,60 +3,63 @@ require('dotenv').config();
 
 async function runAllSeeders() {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
+    }
     console.log('===========================================');
     console.log('🚀 RUNNING ALL SEEDERS');
     console.log('===========================================\n');
 
-    // Run each seeder manually
+    // Import seeders
+    const userSeeder = require('./userSeeder.js');
+    const sellerSeeder = require('./sellerSeeder.js');
+    const rentalSpaceSeeder = require('./rentalSpaceSeeder.js');
+    const contractSeeder = require('./contractSeeder.js');
+    const rentPaymentSeeder = require('./rentPaymentSeeder.js');
+    const sellerDataSeeder = require('./sellerDataSeeder.js');
+    const stockMovementSeeder = require('./stockMovementSeeder.js');
+    const saleSeeder = require('./saleSeeder.js');
+    const dailySalesSeeder = require('./dailySalesSeeder.js');
+    const orderSeeder = require('./orderSeeder.js');
+
     console.log('\n📦 Running: User (Admin)...');
-    require('./userSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await userSeeder();
     console.log('✅ User (Admin) completed');
 
     console.log('\n📦 Running: Sellers (5 vendeurs)...');
-    require('./sellerSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await sellerSeeder();
     console.log('✅ Sellers completed');
 
     console.log('\n📦 Running: Rental Spaces...');
-    require('./rentalSpaceSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await rentalSpaceSeeder();
     console.log('✅ Rental Spaces completed');
 
     console.log('\n📦 Running: Contracts...');
-    require('./contractSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await contractSeeder();
     console.log('✅ Contracts completed');
 
     console.log('\n📦 Running: Rent Payments...');
-    require('./rentPaymentSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await rentPaymentSeeder();
     console.log('✅ Rent Payments completed');
 
     console.log('\n📦 Running: Seller Data...');
-    require('./sellerDataSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await sellerDataSeeder();
     console.log('✅ Seller Data completed');
 
     console.log('\n📦 Running: Stock Movements...');
-    require('./stockMovementSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await stockMovementSeeder();
     console.log('✅ Stock Movements completed');
 
     console.log('\n📦 Running: Sales...');
-    require('./saleSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await saleSeeder();
     console.log('✅ Sales completed');
 
     console.log('\n📦 Running: Daily Sales...');
-    require('./dailySalesSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await dailySalesSeeder();
     console.log('✅ Daily Sales completed');
 
     console.log('\n📦 Running: Orders...');
-    require('./orderSeeder.js');
-    await new Promise(r => setTimeout(r, 500));
+    await orderSeeder();
     console.log('✅ Orders completed');
 
     console.log('\n===========================================');
@@ -83,12 +86,9 @@ async function runAllSeeders() {
     console.log(`  - Sales: ${await Sale.countDocuments()}`);
     console.log(`  - Orders: ${await Order.countDocuments()}`);
 
-    await mongoose.disconnect();
-    console.log('\n👋 Disconnected from MongoDB');
-    process.exit(0);
+    console.log('\n👋 Seeders finished, keeping connection open for server');
   } catch (error) {
     console.error('❌ Fatal error:', error.message);
-    process.exit(1);
   }
 }
 

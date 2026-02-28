@@ -23,6 +23,9 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB Connected");
+        
+        // To run seeders manually: npm run seed
+        // require("./seeders/runAllSeeders");
     })
     .catch(err => console.log(err));
 

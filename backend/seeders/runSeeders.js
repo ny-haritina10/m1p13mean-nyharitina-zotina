@@ -35,7 +35,7 @@ const PRODUCTS = [
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    console.log('Connected to MongoDB');
+    }
 
     let seller = await User.findOne({ role: 'boutique', status: 'approved' });
     
@@ -69,13 +69,14 @@ async function seed() {
     await Product.insertMany(productsToCreate);
     console.log(PRODUCTS.length + ' products seeded successfully');
 
-    await mongoose.disconnect();
+    
     console.log('Disconnected from MongoDB');
-    process.exit(0);
+    
   } catch (error) {
     console.error('Error:', error.message);
-    process.exit(1);
+    
   }
 }
 
-seed();
+
+module.exports = seed();

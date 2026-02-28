@@ -4,14 +4,14 @@ const User = require('../models/User');
 
 const seedSellers = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    console.log('Connected to MongoDB');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
+    }
 
     const existingSellers = await User.find({ role: 'boutique' });
     
     if (existingSellers.length >= 5) {
       console.log('5 or more sellers already exist');
-      await mongoose.disconnect();
       return;
     }
 
@@ -75,14 +75,9 @@ const seedSellers = async () => {
     }
 
     console.log('Seller seeding completed');
-    
-    await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
-    process.exit(0);
   } catch (error) {
     console.error('Error seeding sellers:', error.message);
-    process.exit(1);
   }
 };
 
-seedSellers();
+module.exports = seedSellers;

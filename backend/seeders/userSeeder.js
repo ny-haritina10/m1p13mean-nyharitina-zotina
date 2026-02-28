@@ -4,14 +4,14 @@ const User = require('../models/User');
 
 const seedAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    console.log('Connected to MongoDB');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
+    }
 
     const adminExists = await User.findOne({ username: 'admin' });
 
     if (adminExists) {
       console.log('Admin user already exists');
-      await mongoose.disconnect();
       return;
     }
 
@@ -26,14 +26,9 @@ const seedAdmin = async () => {
 
     await admin.save();
     console.log('Admin user created successfully');
-    
-    await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
-    process.exit(0);
   } catch (error) {
     console.error('Error seeding admin:', error.message);
-    process.exit(1);
   }
 };
 
-seedAdmin();
+module.exports = seedAdmin;

@@ -8,15 +8,15 @@ const RentalSpace = require('../models/RentalSpace');
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mean_db');
-    console.log('Connected to MongoDB');
+    }
 
     const sellers = await User.find({ role: 'boutique' });
     console.log(`Found ${sellers.length} sellers`);
 
     if (sellers.length === 0) {
       console.log('No sellers found. Please run sellerSeeder first.');
-      await mongoose.disconnect();
-      process.exit(0);
+      
+      
     }
 
     let rentalSpaces = await RentalSpace.find({ status: 'available' });
@@ -85,13 +85,14 @@ async function seed() {
 
     console.log(`Contracts seeding completed: ${contractsCreated} contracts created`);
 
-    await mongoose.disconnect();
+    
     console.log('Disconnected from MongoDB');
-    process.exit(0);
+    
   } catch (error) {
     console.error('Error:', error.message);
-    process.exit(1);
+    
   }
 }
 
-seed();
+
+module.exports = seed();
