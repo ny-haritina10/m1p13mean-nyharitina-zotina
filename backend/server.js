@@ -8,12 +8,12 @@ const app = express();
 const corsOptions = {
     origin: [
         'http://localhost:4200',
-        'https://m1p13mean-nyharitina-zotina.netlify.app' 
-        // '*' 
+        'https://m1p13mean-nyharitina-zotina.netlify.app'
+        // '*'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-Id']
 };
 
 app.use(cors(corsOptions));
