@@ -22,6 +22,12 @@ export interface RegisterData {
   password: string;
 }
 
+export const DEMO_CREDENTIALS = {
+  customer: { email: 'rasoa@example.com', password: 'password123' },
+  seller: { username: 'vendeur1', password: 'password123' },
+  admin: { username: 'admin', password: 'admin' }
+};
+
 @Injectable({
   providedIn: 'root'
 })

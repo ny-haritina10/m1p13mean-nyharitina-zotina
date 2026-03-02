@@ -63,6 +63,6 @@ export class AdminHomeComponent {
 
   logout(): void {
     this.authService.logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 }

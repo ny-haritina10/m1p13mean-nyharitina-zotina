@@ -20,17 +20,17 @@ import { AuthService } from '../../../auth/services/auth.service';
           <span class="brand-text">Centre Commercial</span>
         </div>
       </div>
-      
+
       <div class="navbar-right">
         <button class="nav-icon-btn">
           <span class="material-icons">search</span>
         </button>
-        
+
         <button class="nav-icon-btn">
           <span class="material-icons">notifications_none</span>
           <span class="badge"></span>
         </button>
-        
+
         <div class="profile-dropdown" (click)="toggleDropdown()">
           <div class="profile-avatar">
             <span class="material-icons">person</span>
@@ -40,7 +40,7 @@ import { AuthService } from '../../../auth/services/auth.service';
             <span class="profile-role">Administrateur</span>
           </div>
           <span class="material-icons dropdown-arrow">expand_more</span>
-          
+
           <div class="dropdown-menu" *ngIf="showDropdown" (click)="$event.stopPropagation()">
             <a class="dropdown-item">
               <span class="material-icons">account_circle</span>
@@ -75,13 +75,13 @@ import { AuthService } from '../../../auth/services/auth.service';
       right: 0;
       z-index: 1000;
     }
-    
+
     .navbar-left {
       display: flex;
       align-items: center;
       gap: 20px;
     }
-    
+
     .menu-toggle {
       background: none;
       border: none;
@@ -93,22 +93,22 @@ import { AuthService } from '../../../auth/services/auth.service';
       justify-content: center;
       transition: var(--transition);
     }
-    
+
     .menu-toggle:hover {
       background: #f5f5f5;
     }
-    
+
     .menu-toggle .material-icons {
       font-size: 26px;
       color: #1a1a2e;
     }
-    
+
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    
+
     .logo {
       width: 40px;
       height: 40px;
@@ -118,25 +118,25 @@ import { AuthService } from '../../../auth/services/auth.service';
       align-items: center;
       justify-content: center;
     }
-    
+
     .logo .material-icons {
       font-size: 22px;
       color: white;
     }
-    
+
     .brand-text {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 20px;
       font-weight: 700;
       color: #1a1a2e;
     }
-    
+
     .navbar-right {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    
+
     .nav-icon-btn {
       background: none;
       border: none;
@@ -149,21 +149,21 @@ import { AuthService } from '../../../auth/services/auth.service';
       justify-content: center;
       transition: var(--transition);
     }
-    
+
     .nav-icon-btn:hover {
       background: #f5f5f5;
     }
-    
+
     .nav-icon-btn .material-icons {
       font-size: 24px;
       color: #636e72;
       transition: var(--transition);
     }
-    
+
     .nav-icon-btn:hover .material-icons {
       color: #1a1a2e;
     }
-    
+
     .badge {
       position: absolute;
       top: 8px;
@@ -174,7 +174,7 @@ import { AuthService } from '../../../auth/services/auth.service';
       border-radius: 50%;
       border: 2px solid white;
     }
-    
+
     .profile-dropdown {
       display: flex;
       align-items: center;
@@ -186,11 +186,11 @@ import { AuthService } from '../../../auth/services/auth.service';
       margin-left: 8px;
       transition: var(--transition);
     }
-    
+
     .profile-dropdown:hover {
       background: #f5f5f5;
     }
-    
+
     .profile-avatar {
       width: 44px;
       height: 44px;
@@ -200,34 +200,34 @@ import { AuthService } from '../../../auth/services/auth.service';
       align-items: center;
       justify-content: center;
     }
-    
+
     .profile-avatar .material-icons {
       font-size: 22px;
       color: white;
     }
-    
+
     .profile-info {
       display: flex;
       flex-direction: column;
     }
-    
+
     .profile-name {
       font-size: 14px;
       font-weight: 600;
       color: #1a1a2e;
       line-height: 1.2;
     }
-    
+
     .profile-role {
       font-size: 12px;
       color: #636e72;
     }
-    
+
     .dropdown-arrow {
       font-size: 20px;
       color: #b2bec3;
     }
-    
+
     .dropdown-menu {
       position: absolute;
       top: calc(100% + 8px);
@@ -239,7 +239,7 @@ import { AuthService } from '../../../auth/services/auth.service';
       padding: 8px;
       animation: dropdownFade 0.2s ease;
     }
-    
+
     @keyframes dropdownFade {
       from {
         opacity: 0;
@@ -250,7 +250,7 @@ import { AuthService } from '../../../auth/services/auth.service';
         transform: translateY(0);
       }
     }
-    
+
     .dropdown-item {
       display: flex;
       align-items: center;
@@ -263,24 +263,24 @@ import { AuthService } from '../../../auth/services/auth.service';
       border-radius: 10px;
       transition: var(--transition);
     }
-    
+
     .dropdown-item:hover {
       background: #f5f5f5;
     }
-    
+
     .dropdown-item .material-icons {
       font-size: 20px;
       color: #636e72;
     }
-    
+
     .dropdown-item.logout {
       color: #e74c3c;
     }
-    
+
     .dropdown-item.logout .material-icons {
       color: #e74c3c;
     }
-    
+
     .dropdown-divider {
       height: 1px;
       background: #eee;
@@ -290,21 +290,21 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class NavbarComponent {
   @Output() toggleSidebar = new EventEmitter<void>();
-  
+
   showDropdown = false;
   username = '';
-  
+
   constructor(private authService: AuthService) {
     const user = this.authService.getUser();
     this.username = user?.username || 'Admin';
   }
-  
+
   toggleDropdown(): void {
     this.showDropdown = !this.showDropdown;
   }
-  
+
   logout(): void {
     this.authService.logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 }

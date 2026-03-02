@@ -7,7 +7,7 @@ import {AuthService} from '../../../auth/services/auth.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-   
+
   `,
   styles: [`
 
@@ -23,6 +23,6 @@ export class DashboardComponent {
 
   logout(): void {
     this.authService.logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 }

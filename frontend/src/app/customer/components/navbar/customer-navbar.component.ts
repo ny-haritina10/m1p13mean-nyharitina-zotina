@@ -29,15 +29,15 @@ import { CartService, Cart } from '../../../cart/services/cart.service';
         </a>
 
         <div class="auth-buttons" *ngIf="!isLoggedIn">
-          <a routerLink="/customer-login" [queryParams]="{email: 'rasoa@example.com', password: 'password123'}" class="btn-customer">
+          <a routerLink="/customer-login" [queryParams]="{demo: 'true'}" class="btn-customer">
             <span class="material-icons">person</span>
             <span class="btn-text">Connexion Client</span>
           </a>
-          <a routerLink="/login" [queryParams]="{username: 'vendeur1', password: 'password123'}" class="btn-backoffice">
+          <a routerLink="/login" [queryParams]="{demo: 'seller'}" class="btn-backoffice">
             <span class="material-icons">admin_panel_settings</span>
             <span class="btn-text">Connexion Boutique</span>
           </a>
-          <a routerLink="/login" [queryParams]="{username: 'admin', password: 'admin'}" class="btn-backoffice">
+          <a routerLink="/login" [queryParams]="{demo: 'admin'}" class="btn-backoffice">
             <span class="material-icons">admin_panel_settings</span>
             <span class="btn-text">Connexion Admin</span>
           </a>
